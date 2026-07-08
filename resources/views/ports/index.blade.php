@@ -1,0 +1,125 @@
+@extends('layouts.master')
+
+@section('content')
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+
+    <div>
+        <h2 class="fw-bold">🚢 Ports</h2>
+        <p class="text-muted">
+            List of ports in the SupplyGuard database.
+        </p>
+    </div>
+
+    <a href="{{ route('ports.create') }}" class="btn btn-success">
+        <i class="bi bi-plus-circle"></i>
+        Add Port
+    </a>
+
+</div>
+
+@if(session('success'))
+
+<div class="alert alert-success">
+
+    {{ session('success') }}
+
+</div>
+
+@endif
+
+<div class="table-responsive">
+
+<table class="table table-bordered table-hover">
+
+    <thead class="table-dark">
+
+        <tr>
+
+            <th>No</th>
+
+            <th>Port</th>
+
+            <th>Country</th>
+
+            <th>City</th>
+
+            <th>Status</th>
+
+            <th>Action</th>
+
+        </tr>
+
+    </thead>
+
+    <tbody>
+
+    @forelse($ports as $port)
+
+        <tr>
+
+            <td>{{ $loop->iteration }}</td>
+
+            <td>{{ $port->port_name }}</td>
+
+            <td>{{ $port->country->country_name }}</td>
+
+            <td>{{ $port->city }}</td>
+
+            <td>{{ $port->status }}</td>
+
+            <td>
+
+                <a href="{{ route('ports.edit',$port->id) }}"
+   class="btn btn-warning btn-sm">
+
+    <i class="bi bi-pencil-square"></i>
+
+    Edit
+
+</a>
+
+                <form action="{{ route('ports.destroy',$port->id) }}"
+      method="POST"
+      class="d-inline">
+
+    @csrf
+    @method('DELETE')
+
+    <button
+        class="btn btn-danger btn-sm"
+        onclick="return confirm('Delete this port?')">
+
+        <i class="bi bi-trash"></i>
+
+        Delete
+
+    </button>
+
+</form>
+
+            </td>
+
+        </tr>
+
+    @empty
+
+        <tr>
+
+            <td colspan="6" class="text-center">
+
+                No port data available.
+
+            </td>
+
+        </tr>
+
+    @endforelse
+
+    </tbody>
+
+</table>
+
+</div>
+
+@endsection
