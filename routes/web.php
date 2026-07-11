@@ -11,6 +11,7 @@ use App\Http\Controllers\NewsController;
 use App\Http\Controllers\PortsController;
 use App\Http\Controllers\RiskController;
 use App\Http\Controllers\ComparisonController;
+use App\Http\Controllers\ReportController;
 
 /*
 |--------------------------------------------------------------------------
@@ -51,6 +52,11 @@ Route::middleware(['auth'])->group(function () {
 
     Route::get('/comparison', [ComparisonController::class, 'index'])
         ->name('comparison');
+
+    Route::get(
+    '/risk-report-pdf',
+    [ReportController::class, 'riskPdf']
+    )->name('risk.pdf');
 
     /*
     |--------------------------------------------------------------------------

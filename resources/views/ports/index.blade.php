@@ -5,7 +5,7 @@
 <div class="d-flex justify-content-between align-items-center mb-4">
 
     <div>
-        <h2 class="fw-bold">🚢 Ports</h2>
+        <h2 class="fw-bold">Ports</h2>
         <p class="text-muted">
             List of ports in the SupplyGuard database.
         </p>
@@ -27,6 +27,41 @@
 </div>
 
 @endif
+
+<form method="GET" class="mb-4">
+
+    <div class="row">
+
+        <div class="col-md-4">
+
+            <select
+                name="country"
+                class="form-select"
+                onchange="this.form.submit()">
+
+                <option value="">
+                    All Countries
+                </option>
+
+                @foreach($countries as $country)
+
+                    <option
+                        value="{{ $country->country_code }}"
+                        {{ $selectedCountry == $country->country_code ? 'selected' : '' }}>
+
+                        {{ $country->country_name }}
+
+                    </option>
+
+                @endforeach
+
+            </select>
+
+        </div>
+
+    </div>
+
+</form>
 
 <div class="table-responsive">
 
@@ -108,7 +143,23 @@
 
             <td colspan="6" class="text-center">
 
-                No port data available.
+                @if($selectedCountry)
+
+    <td colspan="6" class="text-center text-warning">
+
+        ⚠ No major seaport available for this country.
+
+    </td>
+
+@else
+
+    <td colspan="6" class="text-center">
+
+        No port data available.
+
+    </td>
+
+@endif
 
             </td>
 

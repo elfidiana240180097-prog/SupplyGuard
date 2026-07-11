@@ -5,7 +5,7 @@
 <div class="d-flex justify-content-between align-items-center mb-4">
 
     <div>
-        <h2 class="fw-bold">🌍 Countries</h2>
+        <h2 class="fw-bold">Countries</h2>
         <p class="text-muted">
             List of countries stored in the SupplyGuard database.
         </p>

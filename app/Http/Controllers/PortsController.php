@@ -9,13 +9,31 @@ use Illuminate\Http\Request;
 class PortsController extends Controller
 {
     public function index()
-    {
-        $ports = Port::with('country')
-            ->orderBy('port_name')
-            ->get();
+{
+    $countries = Country::orderBy('country_name')->get();
 
-        return view('ports.index', compact('ports'));
+    $selectedCountry = request('country');
+
+    $ports = Port::with('country');
+
+    if ($selectedCountry) {
+
+        $ports->whereHas('country', function ($query) use ($selectedCountry) {
+
+            $query->where('country_code', $selectedCountry);
+
+        });
+
     }
+
+    $ports = $ports->orderBy('port_name')->get();
+
+    return view('ports.index', compact(
+        'ports',
+        'countries',
+        'selectedCountry'
+    ));
+}
 
     public function create()
     {
