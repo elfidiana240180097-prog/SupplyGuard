@@ -125,11 +125,39 @@
 
                 </h3>
 
-                <span class="badge bg-warning">
+                @if($riskLevel == 'Low')
 
-                    {{ $riskLevel }}
+    <span class="badge bg-success">
 
-                </span>
+        {{ $riskLevel }}
+
+    </span>
+
+@elseif($riskLevel == 'Medium')
+
+    <span class="badge bg-warning">
+
+        {{ $riskLevel }}
+
+    </span>
+
+@elseif($riskLevel == 'High')
+
+    <span class="badge bg-danger">
+
+        {{ $riskLevel }}
+
+    </span>
+
+@else
+
+    <span class="badge bg-dark">
+
+        {{ $riskLevel }}
+
+    </span>
+
+@endif
 
             </div>
 
@@ -160,6 +188,56 @@
             </div>
 
         </div>
+
+    </div>
+
+</div>
+
+<div class="card shadow-sm mt-4">
+
+    <div class="card-header">
+
+        <h5 class="mb-0">
+            Risk Components
+        </h5>
+
+    </div>
+
+    <div class="card-body">
+
+        <table class="table table-bordered">
+
+            <tr>
+                <th>Indicator</th>
+                <th>Score</th>
+            </tr>
+
+            <tr>
+                <td>Weather Risk</td>
+                <td>{{ $weatherRisk }}</td>
+            </tr>
+
+            <tr>
+                <td>Inflation Risk</td>
+                <td>{{ $inflationRisk }}</td>
+            </tr>
+
+            <tr>
+                <td>Currency Risk</td>
+                <td>{{ $currencyRisk }}</td>
+            </tr>
+
+            <tr>
+                <td>News Risk</td>
+                <td>{{ $newsRisk }}</td>
+            </tr>
+
+            <tr class="table-warning fw-bold">
+                <td>Total Risk Score</td>
+                <td>{{ $riskScore }}</td>
+            </tr>
+
+        </table>
 
     </div>
 

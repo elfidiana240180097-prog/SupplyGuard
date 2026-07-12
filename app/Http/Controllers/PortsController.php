@@ -8,30 +8,52 @@ use Illuminate\Http\Request;
 
 class PortsController extends Controller
 {
-    public function index()
+public function index()
 {
     $countries = Country::orderBy('country_name')->get();
 
     $selectedCountry = request('country');
 
-    $ports = Port::with('country');
+    $portsQuery = Port::with('country');
 
     if ($selectedCountry) {
 
-        $ports->whereHas('country', function ($query) use ($selectedCountry) {
+        $portsQuery->whereHas('country', function ($query) use ($selectedCountry) {
 
             $query->where('country_code', $selectedCountry);
 
         });
-
     }
 
-    $ports = $ports->orderBy('port_name')->get();
+    $ports = $portsQuery
+        ->orderBy('port_name')
+        ->get();
+
+    $mapPorts = $ports
+        ->whereNotNull('latitude')
+        ->whereNotNull('longitude')
+        ->values();
+
+    $totalPorts = $ports->count();
+
+    $normalPorts = $ports->where('status', 'Normal')->count();
+
+    $busyPorts = $ports->where('status', 'Busy')->count();
+
+    $delayedPorts = $ports->where('status', 'Delayed')->count();
+
+    $closedPorts = $ports->where('status', 'Closed')->count();
 
     return view('ports.index', compact(
         'ports',
         'countries',
-        'selectedCountry'
+        'selectedCountry',
+        'mapPorts',
+        'totalPorts',
+        'normalPorts',
+        'busyPorts',
+        'delayedPorts',
+        'closedPorts'
     ));
 }
 
@@ -114,6 +136,39 @@ public function destroy(Port $port)
     return redirect()
         ->route('ports.index')
         ->with('success', 'Port successfully deleted.');
+}
+
+public function map()
+{
+    $countries = Country::orderBy('country_name')->get();
+
+    $selectedCountry = request('country');
+
+    $ports = Port::with('country');
+
+    if ($selectedCountry) {
+
+        $ports->whereHas('country', function ($query) use ($selectedCountry) {
+
+            $query->where(
+                'country_code',
+                $selectedCountry
+            );
+
+        });
+
+    }
+
+    $ports = $ports->get();
+
+    return view(
+        'ports.map',
+        compact(
+            'ports',
+            'countries',
+            'selectedCountry'
+        )
+    );
 }
 
 }

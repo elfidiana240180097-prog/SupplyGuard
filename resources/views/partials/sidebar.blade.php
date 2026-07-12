@@ -2,14 +2,16 @@
 
     <div class="p-3">
 
-        <!-- Profile -->
         <div class="text-center mb-4">
 
-            <img src="https://ui-avatars.com/api/?name=Admin&background=198754&color=fff"
-                 class="rounded-circle mb-2"
-                 width="80">
+            <img
+                src="https://ui-avatars.com/api/?name=Admin&background=198754&color=fff"
+                class="rounded-circle mb-2"
+                width="80">
 
-            <h6 class="mb-0">Administrator</h6>
+            <h6 class="mb-0">
+                Administrator
+            </h6>
 
             <small class="text-success">
                 ● Online
@@ -17,7 +19,6 @@
 
         </div>
 
-        <!-- Clock -->
         <div class="alert alert-success text-center">
 
             <div id="clock"></div>
@@ -44,6 +45,15 @@
                 Countries
             </a>
 
+            <a href="{{ route('watchlists.index') }}"
+            class="list-group-item list-group-item-action border-0 {{ request()->routeIs('watchlists.*') ? 'active' : '' }}">
+
+            <i class="bi bi-star-fill me-2"></i>
+
+            Watchlist
+
+            </a>
+
             <a href="{{ route('weather') }}"
                class="list-group-item list-group-item-action border-0 {{ request()->routeIs('weather') ? 'active' : '' }}">
                 <i class="bi bi-cloud-sun me-2"></i>
@@ -63,9 +73,15 @@
             </a>
 
             <a href="{{ route('ports.index') }}"
-               class="list-group-item list-group-item-action border-0 {{ request()->routeIs('ports') ? 'active' : '' }}">
+               class="list-group-item list-group-item-action border-0 {{ request()->routeIs('ports.*') ? 'active' : '' }}">
                 <i class="bi bi-truck me-2"></i>
                 Ports
+            </a>
+
+            <a href="{{ route('ports.map') }}"
+               class="list-group-item list-group-item-action border-0 {{ request()->routeIs('ports.map') ? 'active' : '' }}">
+                <i class="bi bi-geo-alt-fill me-2"></i>
+                Port Map
             </a>
 
             <a href="{{ route('risk') }}"
@@ -85,3 +101,4 @@
     </div>
 
 </div>
+

@@ -63,6 +63,90 @@
 
 </form>
 
+<div class="row mb-4">
+
+    <div class="col-md-3">
+
+        <div class="card text-center">
+
+            <div class="card-body">
+
+                <h5>Total Ports</h5>
+
+                <h2>{{ $totalPorts }}</h2>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <div class="col-md-3">
+
+        <div class="card text-center">
+
+            <div class="card-body">
+
+                <h5>Normal</h5>
+
+                <h2>{{ $normalPorts }}</h2>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <div class="col-md-3">
+
+        <div class="card text-center">
+
+            <div class="card-body">
+
+                <h5>Busy</h5>
+
+                <h2>{{ $busyPorts }}</h2>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <div class="col-md-3">
+
+        <div class="card text-center">
+
+            <div class="card-body">
+
+                <h5>Delayed</h5>
+
+                <h2>{{ $delayedPorts }}</h2>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+<div class="card mb-4">
+
+    <div class="card-header">
+
+        🌍 Global Port Location Map
+
+    </div>
+
+    <div class="card-body">
+
+        <div id="portMap" style="height:500px;"></div>
+
+    </div>
+
+</div>
+
 <div class="table-responsive">
 
 <table class="table table-bordered table-hover">
@@ -172,5 +256,42 @@
 </table>
 
 </div>
+
+@push('scripts')
+
+<script>
+
+const map = L.map('portMap').setView([20, 0], 2);
+
+L.tileLayer(
+    'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+    {
+        attribution: '&copy; OpenStreetMap'
+    }
+).addTo(map);
+
+const ports = @json($mapPorts);
+
+ports.forEach(function(port){
+
+    L.marker([
+        port.latitude,
+        port.longitude
+    ])
+    .addTo(map)
+    .bindPopup(
+        `
+        <strong>${port.port_name}</strong><br>
+        Country: ${port.country.country_name}<br>
+        City: ${port.city}<br>
+        Status: ${port.status}
+        `
+    );
+
+});
+
+</script>
+
+@endpush
 
 @endsection

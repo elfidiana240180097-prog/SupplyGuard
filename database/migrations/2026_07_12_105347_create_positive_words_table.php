@@ -6,27 +6,27 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
+    /**
+     * Run the migrations.
+     */
     public function up(): void
 {
-    Schema::create('watchlists', function ($table) {
+    Schema::create('positive_words', function ($table) {
 
         $table->id();
 
-        $table->foreignId('user_id')
-            ->constrained()
-            ->cascadeOnDelete();
-
-        $table->foreignId('country_id')
-            ->constrained()
-            ->cascadeOnDelete();
+        $table->string('word');
 
         $table->timestamps();
 
     });
 }
 
+    /**
+     * Reverse the migrations.
+     */
     public function down(): void
     {
-        Schema::dropIfExists('watchlists');
+        Schema::dropIfExists('positive_words');
     }
 };

@@ -47,29 +47,63 @@ class RiskController extends Controller
 
         }
 
-        $riskScore = rand(40, 90);
+        $weatherRisk = rand(10, 30);
 
-        $riskLevel = 'Low';
+$inflationRisk = 10;
 
-        if ($riskScore >= 70) {
-            $riskLevel = 'High';
-        } elseif ($riskScore >= 50) {
-            $riskLevel = 'Medium';
-        }
+if ($inflation > 3) {
+    $inflationRisk = 20;
+}
+
+if ($inflation > 7) {
+    $inflationRisk = 30;
+}
+
+$currencyRisk = 20;
+
+$newsRisk = rand(10, 30);
+
+$riskScore =
+    $weatherRisk +
+    $inflationRisk +
+    $currencyRisk +
+    $newsRisk;
+
+$riskLevel = 'Low';
+
+if ($riskScore >= 80) {
+
+    $riskLevel = 'Critical';
+
+}
+elseif ($riskScore >= 60) {
+
+    $riskLevel = 'High';
+
+}
+elseif ($riskScore >= 40) {
+
+    $riskLevel = 'Medium';
+
+}
 
         $rankingCountries = Country::orderByDesc('population')
             ->take(10)
             ->get();
 
         return view('risk', compact(
-            'countries',
-            'selectedCountry',
-            'population',
-            'gdp',
-            'inflation',
-            'riskScore',
-            'riskLevel',
-            'rankingCountries'
-        ));
+    'countries',
+    'selectedCountry',
+    'population',
+    'gdp',
+    'inflation',
+    'weatherRisk',
+    'inflationRisk',
+    'currencyRisk',
+    'newsRisk',
+    'riskScore',
+    'riskLevel',
+    'rankingCountries'
+));
     }
 }

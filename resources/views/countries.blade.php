@@ -61,6 +61,25 @@
 
         </div>
 
+        <form
+    action="{{ route('watchlists.store', $country->id) }}"
+    method="POST"
+    class="d-inline">
+
+    @csrf
+
+    <button
+        type="submit"
+        class="btn btn-primary btn-sm">
+
+        <i class="bi bi-star-fill"></i>
+
+        Watchlist
+
+    </button>
+
+</form>
+
         <div class="card-footer bg-white">
 
             <a href="{{ route('countries.edit',$country->id) }}"

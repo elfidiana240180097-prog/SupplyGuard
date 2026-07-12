@@ -42,6 +42,70 @@
 
 </form>
 
+<div class="row mb-4">
+
+    <div class="col-md-4">
+
+        <div class="card text-center">
+
+            <div class="card-body">
+
+                <h5>Positive Score</h5>
+
+                <h2 class="text-success">
+
+                    {{ $positiveScore }}
+
+                </h2>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <div class="col-md-4">
+
+        <div class="card text-center">
+
+            <div class="card-body">
+
+                <h5>Negative Score</h5>
+
+                <h2 class="text-danger">
+
+                    {{ $negativeScore }}
+
+                </h2>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <div class="col-md-4">
+
+        <div class="card text-center">
+
+            <div class="card-body">
+
+                <h5>Sentiment</h5>
+
+                <h2>
+
+                    {{ $sentiment }}
+
+                </h2>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
 <div class="row">
 
 @forelse($articles as $article)
