@@ -14,21 +14,9 @@ use App\Http\Controllers\ComparisonController;
 use App\Http\Controllers\ReportController;
 use App\Http\Controllers\WatchlistController;
 
-/*
-|--------------------------------------------------------------------------
-| Halaman Awal
-|--------------------------------------------------------------------------
-*/
-
 Route::get('/', function () {
     return redirect()->route('login');
 });
-
-/*
-|--------------------------------------------------------------------------
-| Semua halaman setelah login
-|--------------------------------------------------------------------------
-*/
 
 Route::middleware(['auth'])->group(function () {
 
@@ -36,11 +24,6 @@ Route::middleware(['auth'])->group(function () {
         ->name('dashboard');
 
     Route::resource('countries', CountriesController::class);
-
-    Route::get(
-    '/ports-map',
-    [PortsController::class, 'map']
-    )->name('ports.map');
 
     Route::get('/weather', [WeatherController::class, 'index'])
         ->name('weather');
@@ -53,37 +36,26 @@ Route::middleware(['auth'])->group(function () {
 
     Route::resource('ports', PortsController::class);
 
+    Route::get('/ports-map', [PortsController::class, 'map'])
+        ->name('ports.map');
+
     Route::get('/risk', [RiskController::class, 'index'])
         ->name('risk');
 
     Route::get('/comparison', [ComparisonController::class, 'index'])
         ->name('comparison');
 
-    Route::get(
-    '/watchlists',
-    [WatchlistController::class, 'index']
-)->name('watchlists.index');
+    Route::get('/watchlists', [WatchlistController::class, 'index'])
+        ->name('watchlists.index');
 
-Route::post(
-    '/watchlists/{countryId}',
-    [WatchlistController::class, 'store']
-)->name('watchlists.store');
+    Route::post('/watchlists/{countryId}', [WatchlistController::class, 'store'])
+        ->name('watchlists.store');
 
-Route::delete(
-    '/watchlists/{watchlist}',
-    [WatchlistController::class, 'destroy']
-)->name('watchlists.destroy');
+    Route::delete('/watchlists/{watchlist}', [WatchlistController::class, 'destroy'])
+        ->name('watchlists.destroy');
 
-    Route::get(
-    '/risk-report-pdf',
-    [ReportController::class, 'riskPdf']
-    )->name('risk.pdf');
-
-    /*
-    |--------------------------------------------------------------------------
-    | Profile
-    |--------------------------------------------------------------------------
-    */
+    Route::get('/risk-report-pdf', [ReportController::class, 'riskPdf'])
+        ->name('risk.pdf');
 
     Route::get('/profile', [ProfileController::class, 'edit'])
         ->name('profile.edit');
@@ -93,7 +65,6 @@ Route::delete(
 
     Route::delete('/profile', [ProfileController::class, 'destroy'])
         ->name('profile.destroy');
-
 });
 
 require __DIR__.'/auth.php';

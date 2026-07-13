@@ -3,7 +3,6 @@
 namespace App\Http\Controllers;
 
 use App\Models\Watchlist;
-use App\Models\Country;
 use Illuminate\Http\Request;
 
 class WatchlistController extends Controller
@@ -15,7 +14,10 @@ class WatchlistController extends Controller
             ->latest()
             ->get();
 
-        return view('watchlists.index', compact('watchlists'));
+        return view(
+            'watchlists.index',
+            compact('watchlists')
+        );
     }
 
     public function store($countryId)
@@ -25,23 +27,29 @@ class WatchlistController extends Controller
             'country_id' => $countryId
         ]);
 
-        return back()->with(
-            'success',
-            'Country added to watchlist.'
-        );
+        return redirect()
+            ->back()
+            ->with(
+                'success',
+                'Country added to watchlist.'
+            );
     }
 
     public function destroy(Watchlist $watchlist)
     {
-        if ($watchlist->user_id != auth()->id()) {
+        if ($watchlist->user_id !== auth()->id()) {
+
             abort(403);
+
         }
 
         $watchlist->delete();
 
-        return back()->with(
-            'success',
-            'Country removed from watchlist.'
-        );
+        return redirect()
+            ->back()
+            ->with(
+                'success',
+                'Country removed from watchlist.'
+            );
     }
 }

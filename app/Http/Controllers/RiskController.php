@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Models\Country;
+use App\Models\Port;
+use App\Models\RiskScore;
 use Illuminate\Support\Facades\Http;
 
 class RiskController extends Controller
@@ -45,65 +47,177 @@ class RiskController extends Controller
 
         } catch (\Exception $e) {
 
+            $population = 0;
+            $gdp = 0;
+            $inflation = 0;
+
         }
 
-        $weatherRisk = rand(10, 30);
+        /*
+        |--------------------------------------------------------------------------
+        | Weather Risk
+        |--------------------------------------------------------------------------
+        */
 
-$inflationRisk = 10;
+        $weatherRisk = 15;
 
-if ($inflation > 3) {
-    $inflationRisk = 20;
-}
+        if ($population > 100000000) {
 
-if ($inflation > 7) {
-    $inflationRisk = 30;
-}
+            $weatherRisk = 25;
 
-$currencyRisk = 20;
+        }
 
-$newsRisk = rand(10, 30);
+        /*
+        |--------------------------------------------------------------------------
+        | Inflation Risk
+        |--------------------------------------------------------------------------
+        */
 
-$riskScore =
-    $weatherRisk +
-    $inflationRisk +
-    $currencyRisk +
-    $newsRisk;
+        $inflationRisk = 10;
 
-$riskLevel = 'Low';
+        if ($inflation > 3) {
 
-if ($riskScore >= 80) {
+            $inflationRisk = 20;
 
-    $riskLevel = 'Critical';
+        }
 
-}
-elseif ($riskScore >= 60) {
+        if ($inflation > 7) {
 
-    $riskLevel = 'High';
+            $inflationRisk = 30;
 
-}
-elseif ($riskScore >= 40) {
+        }
 
-    $riskLevel = 'Medium';
+        /*
+        |--------------------------------------------------------------------------
+        | Currency Risk
+        |--------------------------------------------------------------------------
+        */
 
-}
+        $currencyRisk = 15;
+
+        /*
+        |--------------------------------------------------------------------------
+        | Port Risk
+        |--------------------------------------------------------------------------
+        */
+
+        $portCount = Port::whereHas(
+            'country',
+            function ($query) use ($selectedCountry) {
+
+                $query->where(
+                    'country_code',
+                    $selectedCountry
+                );
+
+            }
+        )->count();
+
+        $portRisk = 10;
+
+        if ($portCount <= 2) {
+
+            $portRisk = 25;
+
+        }
+
+        /*
+        |--------------------------------------------------------------------------
+        | News Risk
+        |--------------------------------------------------------------------------
+        */
+
+        $newsRisk = 20;
+
+        /*
+        |--------------------------------------------------------------------------
+        | Total Risk Score
+        |--------------------------------------------------------------------------
+        */
+
+        $riskScore =
+            $weatherRisk +
+            $inflationRisk +
+            $currencyRisk +
+            $newsRisk +
+            $portRisk;
+
+        $riskLevel = 'Low';
+
+        if ($riskScore >= 80) {
+
+            $riskLevel = 'Critical';
+
+        } elseif ($riskScore >= 60) {
+
+            $riskLevel = 'High';
+
+        } elseif ($riskScore >= 40) {
+
+            $riskLevel = 'Medium';
+
+        }
+
+        /*
+        |--------------------------------------------------------------------------
+        | Save To Database
+        |--------------------------------------------------------------------------
+        */
+
+        $countryModel = Country::where(
+            'country_code',
+            $selectedCountry
+        )->first();
+
+        if ($countryModel) {
+
+            RiskScore::updateOrCreate(
+
+                [
+                    'country_id' => $countryModel->id
+                ],
+
+                [
+                    'weather_score' => $weatherRisk,
+                    'currency_score' => $currencyRisk,
+                    'news_score' => $newsRisk,
+                    'port_score' => $portRisk,
+                    'overall_score' => $riskScore,
+                    'risk_level' => $riskLevel
+                ]
+
+            );
+
+        }
+
+        /*
+        |--------------------------------------------------------------------------
+        | Ranking
+        |--------------------------------------------------------------------------
+        */
 
         $rankingCountries = Country::orderByDesc('population')
             ->take(10)
             ->get();
 
-        return view('risk', compact(
-    'countries',
-    'selectedCountry',
-    'population',
-    'gdp',
-    'inflation',
-    'weatherRisk',
-    'inflationRisk',
-    'currencyRisk',
-    'newsRisk',
-    'riskScore',
-    'riskLevel',
-    'rankingCountries'
-));
+        return view(
+            'risk',
+            compact(
+                'countries',
+                'selectedCountry',
+                'population',
+                'gdp',
+                'inflation',
+                'weatherRisk',
+                'inflationRisk',
+                'currencyRisk',
+                'newsRisk',
+                'portRisk',
+                'portCount',
+                'riskScore',
+                'riskLevel',
+                'rankingCountries'
+            )
+        );
     }
 }

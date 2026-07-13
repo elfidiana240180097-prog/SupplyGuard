@@ -9,9 +9,24 @@ class CountriesController extends Controller
 {
     public function index()
     {
-        $countries = Country::orderBy('country_name')->get();
+        $search = request('search');
 
-        return view('countries', compact('countries'));
+        $countries = Country::query()
+
+            ->when($search, function ($query) use ($search) {
+
+                $query->where('country_name', 'like', "%{$search}%")
+                      ->orWhere('country_code', 'like', "%{$search}%");
+
+            })
+
+            ->orderBy('country_name')
+            ->get();
+
+        return view('countries', compact(
+            'countries',
+            'search'
+        ));
     }
 
     public function create()
@@ -32,7 +47,7 @@ class CountriesController extends Controller
             'population' => 'nullable|numeric',
             'latitude' => 'nullable|numeric',
             'longitude' => 'nullable|numeric',
-            'flag' => 'nullable|url'
+            'flag' => 'nullable'
         ]);
 
         Country::create($request->all());
@@ -60,7 +75,7 @@ class CountriesController extends Controller
             'population' => 'nullable|numeric',
             'latitude' => 'nullable|numeric',
             'longitude' => 'nullable|numeric',
-            'flag' => 'nullable|url'
+            'flag' => 'nullable'
         ]);
 
         $country->update($request->all());

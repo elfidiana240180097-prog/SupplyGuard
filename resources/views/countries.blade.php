@@ -18,6 +18,16 @@
 
 </div>
 
+<div class="mb-4">
+
+    <input
+        type="text"
+        id="countrySearch"
+        class="form-control form-control-lg"
+        placeholder="Search country...">
+
+</div>
+
 @if(session('success'))
 
 <div class="alert alert-success">
@@ -32,14 +42,17 @@
 
 @forelse($countries as $country)
 
-<div class="col-lg-4 col-md-6 mb-4">
-
+<div
+    class="col-lg-4 col-md-6 mb-4 country-card"
+    data-country="{{ strtolower($country->country_name) }}">
     <div class="card shadow-sm border-0 h-100">
 
         <img
-            src="{{ $country->flag }}"
-            class="card-img-top"
-            style="height:180px; object-fit:cover;">
+    src="https://flagcdn.com/w320/{{ strtolower($country->country_code) }}.png"
+    class="card-img-top"
+    style="height:180px; object-fit:cover;"
+    alt="{{ $country->country_name }}"
+    onerror="this.src='https://placehold.co/320x180?text=No+Flag'">
 
         <div class="card-body">
 
@@ -49,36 +62,33 @@
 
             <hr>
 
-            <p><strong>Country Code :</strong> {{ $country->country_code }}</p>
+            <p>
+                <strong>Country Code :</strong>
+                {{ $country->country_code }}
+            </p>
 
-            <p><strong>Capital :</strong> {{ $country->capital }}</p>
+            <p>
+                <strong>Capital :</strong>
+                {{ $country->capital }}
+            </p>
 
-            <p><strong>Region :</strong> {{ $country->region }}</p>
+            <p>
+                <strong>Region :</strong>
+                {{ $country->region }}
+            </p>
 
-            <p><strong>Currency :</strong> {{ $country->currency_name }} ({{ $country->currency_code }})</p>
+            <p>
+                <strong>Currency :</strong>
+                {{ $country->currency_name }}
+                ({{ $country->currency_code }})
+            </p>
 
-            <p><strong>Population :</strong> {{ number_format($country->population) }}</p>
+            <p>
+                <strong>Population :</strong>
+                {{ number_format($country->population) }}
+            </p>
 
         </div>
-
-        <form
-    action="{{ route('watchlists.store', $country->id) }}"
-    method="POST"
-    class="d-inline">
-
-    @csrf
-
-    <button
-        type="submit"
-        class="btn btn-primary btn-sm">
-
-        <i class="bi bi-star-fill"></i>
-
-        Watchlist
-
-    </button>
-
-</form>
 
         <div class="card-footer bg-white">
 
@@ -91,9 +101,29 @@
 
             </a>
 
-            <form action="{{ route('countries.destroy',$country->id) }}"
-                  method="POST"
-                  class="d-inline">
+            <form
+                action="{{ route('watchlists.store', $country->id) }}"
+                method="POST"
+                class="d-inline">
+
+                @csrf
+
+                <button
+                    type="submit"
+                    class="btn btn-primary btn-sm">
+
+                    <i class="bi bi-star-fill"></i>
+
+                    Watchlist
+
+                </button>
+
+            </form>
+
+            <form
+                action="{{ route('countries.destroy',$country->id) }}"
+                method="POST"
+                class="d-inline">
 
                 @csrf
 
@@ -121,16 +151,50 @@
 
 <div class="col-12">
 
-<div class="alert alert-warning">
+    <div class="alert alert-warning">
 
-No country data available.
+        No country data found.
 
-</div>
+    </div>
 
 </div>
 
 @endforelse
 
 </div>
+
+@push('scripts')
+
+<script>
+
+document
+.getElementById('countrySearch')
+.addEventListener('keyup', function () {
+
+    let keyword = this.value.toLowerCase();
+
+    document
+    .querySelectorAll('.country-card')
+    .forEach(function(card) {
+
+        let country = card.dataset.country;
+
+        if (country.includes(keyword)) {
+
+            card.style.display = '';
+
+        } else {
+
+            card.style.display = 'none';
+
+        }
+
+    });
+
+});
+
+</script>
+
+@endpush
 
 @endsection

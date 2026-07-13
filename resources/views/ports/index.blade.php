@@ -63,6 +63,22 @@
 
 </form>
 
+@if($selectedCountry)
+
+<div class="alert alert-info mb-4">
+
+    <strong>{{ $selectedCountryName }}</strong>
+
+    has
+
+    <strong>{{ $countryPortCount }}</strong>
+
+    port(s) in database.
+
+</div>
+
+@endif
+
 <div class="row mb-4">
 
     <div class="col-md-3">
@@ -135,7 +151,7 @@
 
     <div class="card-header">
 
-        🌍 Global Port Location Map
+        Global Port Location Map
 
     </div>
 
@@ -221,35 +237,29 @@
 
         </tr>
 
-    @empty
+@empty
 
-        <tr>
-
-            <td colspan="6" class="text-center">
-
-                @if($selectedCountry)
-
-    <td colspan="6" class="text-center text-warning">
-
-        ⚠ No major seaport available for this country.
-
-    </td>
-
-@else
+<tr>
 
     <td colspan="6" class="text-center">
 
-        No port data available.
+        @if($selectedCountry)
+
+            <span class="text-warning">
+                ⚠ No major seaport available for this country.
+            </span>
+
+        @else
+
+            No port data available.
+
+        @endif
 
     </td>
 
-@endif
+</tr>
 
-            </td>
-
-        </tr>
-
-    @endforelse
+@endforelse
 
     </tbody>
 
