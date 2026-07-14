@@ -13,12 +13,18 @@ use App\Http\Controllers\RiskController;
 use App\Http\Controllers\ComparisonController;
 use App\Http\Controllers\ReportController;
 use App\Http\Controllers\WatchlistController;
+use App\Http\Controllers\AnalyticsController;
 
 Route::get('/', function () {
     return redirect()->route('login');
 });
 
 Route::middleware(['auth'])->group(function () {
+
+    Route::get(
+    '/analytics',
+    [AnalyticsController::class, 'index']
+    )->middleware('auth');
 
     Route::get('/dashboard', [DashboardController::class, 'index'])
         ->name('dashboard');

@@ -57,9 +57,7 @@
         <div class="col-md-2">
 
             <button class="btn btn-primary">
-
                 Compare
-
             </button>
 
         </div>
@@ -74,13 +72,14 @@
 
     <div class="col-md-6">
 
-        <div class="card shadow-sm">
+        <div class="card shadow-sm h-100">
 
             <div class="card-header">
 
                 <img
-                    src="{{ $dataA->flag }}"
-                    width="40">
+                    src="https://flagcdn.com/48x36/{{ strtolower($dataA->country_code) }}.png"
+                    width="40"
+                    alt="{{ $dataA->country_name }}">
 
                 {{ $dataA->country_name }}
 
@@ -96,6 +95,26 @@
 
                 <p><b>Currency:</b> {{ $dataA->currency_name }}</p>
 
+                <p>
+                    <b>GDP:</b>
+                    ${{ number_format($gdpA, 0) }}
+                </p>
+
+                <p>
+                    <b>Inflation:</b>
+                    {{ round($inflationA, 2) }}%
+                </p>
+
+                <p>
+                    <b>Temperature:</b>
+                    {{ $temperatureA }} °C
+                </p>
+
+                <p>
+                    <b>Risk Score:</b>
+                    {{ $riskA }}
+                </p>
+
             </div>
 
         </div>
@@ -104,13 +123,14 @@
 
     <div class="col-md-6">
 
-        <div class="card shadow-sm">
+        <div class="card shadow-sm h-100">
 
             <div class="card-header">
 
                 <img
-                    src="{{ $dataB->flag }}"
-                    width="40">
+                    src="https://flagcdn.com/48x36/{{ strtolower($dataB->country_code) }}.png"
+                    width="40"
+                    alt="{{ $dataB->country_name }}">
 
                 {{ $dataB->country_name }}
 
@@ -126,6 +146,26 @@
 
                 <p><b>Currency:</b> {{ $dataB->currency_name }}</p>
 
+                <p>
+                    <b>GDP:</b>
+                    ${{ number_format($gdpB, 0) }}
+                </p>
+
+                <p>
+                    <b>Inflation:</b>
+                    {{ round($inflationB, 2) }}%
+                </p>
+
+                <p>
+                    <b>Temperature:</b>
+                    {{ $temperatureB }} °C
+                </p>
+
+                <p>
+                    <b>Risk Score:</b>
+                    {{ $riskB }}
+                </p>
+
             </div>
 
         </div>
@@ -138,7 +178,7 @@
 
     <div class="card-header">
 
-        Population Comparison
+        Risk Comparison Dashboard
 
     </div>
 
@@ -173,16 +213,55 @@ new Chart(chart, {
             "{{ $dataB->country_name ?? '' }}"
         ],
 
-        datasets: [{
+        datasets: [
 
+        {
             label: 'Population',
-
             data: [
                 {{ $dataA->population ?? 0 }},
                 {{ $dataB->population ?? 0 }}
             ]
+        },
 
-        }]
+        {
+            label: 'Inflation',
+            data: [
+                {{ $inflationA ?? 0 }},
+                {{ $inflationB ?? 0 }}
+            ]
+        },
+
+        {
+            label: 'Temperature',
+            data: [
+                {{ $temperatureA ?? 0 }},
+                {{ $temperatureB ?? 0 }}
+            ]
+        },
+
+        {
+            label: 'Risk Score',
+            data: [
+                {{ $riskA ?? 0 }},
+                {{ $riskB ?? 0 }}
+            ]
+        }
+
+        ]
+
+    },
+
+    options: {
+
+        responsive: true,
+
+        plugins: {
+
+            legend: {
+                display: true
+            }
+
+        }
 
     }
 

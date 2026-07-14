@@ -3,7 +3,6 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Article extends Model
 {
@@ -18,13 +17,4 @@ class Article extends Model
         'url',
         'published_at'
     ];
-
-    protected $casts = [
-        'published_at' => 'datetime',
-    ];
-
-    public function country(): BelongsTo
-    {
-        return $this->belongsTo(Country::class);
-    }
 }

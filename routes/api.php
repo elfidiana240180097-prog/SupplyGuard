@@ -19,17 +19,19 @@ Route::get('/ports', function () {
 
 Route::get('/risk', function () {
 
-    return response()->json([
-        'message' => 'Risk API Ready'
-    ]);
+    return RiskScore::with('country')
+        ->orderByDesc('overall_score')
+        ->get();
 
 });
 
+use App\Models\Article;
+
 Route::get('/news', function () {
 
-    return response()->json([
-        'message' => 'News API Ready'
-    ]);
+    return Article::latest()
+        ->take(20)
+        ->get();
 
 });
 

@@ -73,6 +73,52 @@
 
     <div class="col-md-3 mb-4">
 
+    <div class="card shadow-sm">
+
+        <div class="card-body text-center">
+
+            <h6>Currency</h6>
+
+            <h4 class="text-info">
+
+                {{ $currency }}
+
+            </h4>
+
+        </div>
+
+    </div>
+
+</div>
+
+<div class="col-md-3 mb-4">
+
+    <div class="card shadow-sm">
+
+        <div class="card-body text-center">
+
+            <h6>Weather</h6>
+
+            <h4 class="text-primary">
+
+                {{ $temperature }}°C
+
+            </h4>
+
+            <small>
+
+                Wind {{ $windspeed }} km/h
+
+            </small>
+
+        </div>
+
+    </div>
+
+</div>
+
+    <div class="col-md-3 mb-4">
+
         <div class="card shadow-sm">
 
             <div class="card-body text-center">
@@ -230,6 +276,19 @@
             <tr>
                 <td>News Risk</td>
                 <td>{{ $newsRisk }}</td>
+
+                <p class="text-muted">
+
+                Negative News :
+
+                {{ number_format($negativePercent,2) }}%
+
+                </p>
+            </tr>
+
+            <tr>
+            <td>Port Risk</td>
+            <td>{{ $portRisk }}</td>
             </tr>
 
             <tr class="table-warning fw-bold">

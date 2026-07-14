@@ -3,9 +3,11 @@
 namespace App\Http\Controllers;
 
 use App\Models\Country;
+use App\Models\Article;
 use Illuminate\Support\Facades\Http;
 use App\Models\PositiveWord;
 use App\Models\NegativeWord;
+use Carbon\Carbon;
 
 class NewsController extends Controller
 {
@@ -26,6 +28,48 @@ class NewsController extends Controller
     );
 
     $articles = $response->json()['articles'] ?? [];
+
+    $country = Country::where(
+    'country_name',
+    $selectedCountry
+)->first();
+
+foreach ($articles as $article) {
+
+    Article::updateOrCreate(
+
+        [
+            'url' => $article['url'] ?? ''
+        ],
+
+        [
+            'country_id' => $country?->id,
+
+            'title' =>
+                $article['title'] ?? '',
+
+            'source' =>
+                $article['source']['name'] ?? '',
+
+            'author' =>
+                $article['source']['name'] ?? '',
+
+            'description' =>
+                $article['description'] ?? '',
+
+            'content' =>
+                $article['content'] ?? '',
+
+            'image' =>
+                $article['image'] ?? '',
+
+            'published_at' =>
+            isset($article['publishedAt'])
+            ? Carbon::parse($article['publishedAt'])
+            : now()
+        ]
+    );
+}
 
 $positiveWords = PositiveWord::pluck('word')
     ->map(fn($word) => strtolower($word))
@@ -65,6 +109,36 @@ $negativeWords = NegativeWord::pluck('word')
 
     $sentiment = 'Neutral';
 
+    $totalScore =
+    $positiveScore +
+    $negativeScore;
+
+if ($totalScore == 0) {
+
+    $positivePercent = 0;
+    $negativePercent = 0;
+    $neutralPercent = 100;
+
+} else {
+
+    $positivePercent =
+        round(
+            ($positiveScore / $totalScore) * 100,
+            2
+        );
+
+    $negativePercent =
+        round(
+            ($negativeScore / $totalScore) * 100,
+            2
+        );
+
+    $neutralPercent =
+        100 -
+        $positivePercent -
+        $negativePercent;
+}
+
     if ($positiveScore > $negativeScore) {
         $sentiment = 'Positive';
     }
@@ -73,13 +147,31 @@ $negativeWords = NegativeWord::pluck('word')
         $sentiment = 'Negative';
     }
 
+    $newsRiskScore = 10;
+
+if ($negativePercent >= 30) {
+
+    $newsRiskScore = 30;
+
+}
+
+if ($negativePercent >= 60) {
+
+    $newsRiskScore = 50;
+
+}
+
     return view('news', compact(
-        'articles',
-        'countries',
-        'selectedCountry',
-        'positiveScore',
-        'negativeScore',
-        'sentiment'
-    ));
+    'articles',
+    'countries',
+    'selectedCountry',
+    'positiveScore',
+    'negativeScore',
+    'positivePercent',
+    'negativePercent',
+    'neutralPercent',
+    'newsRiskScore',
+    'sentiment'
+));
 }
 }

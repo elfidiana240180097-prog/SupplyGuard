@@ -96,6 +96,12 @@
                 Country Comparison
             </a>
 
+            <a href="{{ url('/analytics') }}"
+            class="list-group-item list-group-item-action border-0 {{ request()->is('analytics') ? 'active' : '' }}">
+            <i class="bi bi-graph-up-arrow me-2"></i>
+            Analytics Dashboard
+            </a>
+
         </div>
 
     </div>

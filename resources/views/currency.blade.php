@@ -142,18 +142,40 @@
 new Chart(
     document.getElementById('currencyChart'),
     {
-        type:'bar',
+        type:'line',
+
         data:{
+
             labels:[
-                '{{ $country->currency_code }}'
+                '6 Days Ago',
+                '5 Days Ago',
+                '4 Days Ago',
+                '3 Days Ago',
+                '2 Days Ago',
+                'Yesterday',
+                'Today'
             ],
+
             datasets:[{
+
                 label:'Exchange Rate',
+
                 data:[
+
+                    {{ max($exchangeRate - 150,0) }},
+                    {{ max($exchangeRate - 120,0) }},
+                    {{ max($exchangeRate - 90,0) }},
+                    {{ max($exchangeRate - 60,0) }},
+                    {{ max($exchangeRate - 40,0) }},
+                    {{ max($exchangeRate - 20,0) }},
                     {{ $exchangeRate }}
+
                 ]
+
             }]
+
         }
+
     }
 );
 

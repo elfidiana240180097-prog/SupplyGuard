@@ -46,7 +46,7 @@
 
     <div class="col-md-4">
 
-        <div class="card text-center">
+        <div class="card text-center shadow-sm">
 
             <div class="card-body">
 
@@ -66,7 +66,7 @@
 
     <div class="col-md-4">
 
-        <div class="card text-center">
+        <div class="card text-center shadow-sm">
 
             <div class="card-body">
 
@@ -86,7 +86,7 @@
 
     <div class="col-md-4">
 
-        <div class="card text-center">
+        <div class="card text-center shadow-sm">
 
             <div class="card-body">
 
@@ -106,6 +106,116 @@
 
 </div>
 
+<div class="row mb-4">
+
+    <div class="col-md-3">
+
+        <div class="card text-center shadow-sm">
+
+            <div class="card-body">
+
+                <h6>Positive %</h6>
+
+                <h3 class="text-success">
+
+                    {{ $positivePercent }}%
+
+                </h3>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <div class="col-md-3">
+
+        <div class="card text-center shadow-sm">
+
+            <div class="card-body">
+
+                <h6>Neutral %</h6>
+
+                <h3 class="text-primary">
+
+                    {{ $neutralPercent }}%
+
+                </h3>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <div class="col-md-3">
+
+        <div class="card text-center shadow-sm">
+
+            <div class="card-body">
+
+                <h6>Negative %</h6>
+
+                <h3 class="text-danger">
+
+                    {{ $negativePercent }}%
+
+                </h3>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <div class="col-md-3">
+
+        <div class="card text-center shadow-sm">
+
+            <div class="card-body">
+
+                <h6>News Risk Score</h6>
+
+                <h3 class="text-warning">
+
+                    {{ $newsRiskScore }}
+
+                </h3>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+<div class="card shadow-sm mb-4">
+
+    <div class="card-header">
+
+        <h5 class="mb-0">
+            Sentiment Analysis Chart
+        </h5>
+
+    </div>
+
+    <div class="card-body">
+
+        <div class="d-flex justify-content-center">
+
+            <div style="width:450px;height:450px;">
+
+                <canvas id="sentimentChart"></canvas>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
 <div class="row">
 
 @forelse($articles as $article)
@@ -116,10 +226,10 @@
 
         @if(!empty($article['image']))
 
-        <img
-            src="{{ $article['image'] }}"
-            class="card-img-top"
-            style="height:220px; object-fit:cover;">
+            <img
+                src="{{ $article['image'] }}"
+                class="card-img-top"
+                style="height:220px; object-fit:cover;">
 
         @endif
 
@@ -139,7 +249,7 @@
 
         </div>
 
-        <div class="card-footer bg-white border-0">
+        <div class="card-footer bg-white">
 
             <small class="text-muted">
 
@@ -181,3 +291,48 @@
 </div>
 
 @endsection
+
+@push('scripts')
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script>
+
+new Chart(
+    document.getElementById('sentimentChart'),
+    {
+        type: 'pie',
+
+        data: {
+
+            labels: [
+                'Positive',
+                'Neutral',
+                'Negative'
+            ],
+
+            datasets: [{
+
+                data: [
+                    {{ $positivePercent }},
+                    {{ $neutralPercent }},
+                    {{ $negativePercent }}
+                ]
+
+            }]
+        },
+
+        options: {
+
+            responsive: true,
+
+            maintainAspectRatio: false
+
+        }
+
+    }
+);
+
+</script>
+
+@endpush
