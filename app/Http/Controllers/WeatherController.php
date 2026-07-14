@@ -9,15 +9,16 @@ class WeatherController extends Controller
 {
     public function index()
     {
-        $countries = Country::orderBy('country_name')->get();
+        $countries = Country::whereNotNull('latitude')
+            ->whereNotNull('longitude')
+            ->take(20)
+            ->get();
 
-        $weather = null;
+        $weatherCountries = [];
 
-        if (request('country')) {
+        foreach ($countries as $country) {
 
-            $country = Country::find(request('country'));
-
-            if ($country) {
+            try {
 
                 $response = Http::get(
                     'https://api.open-meteo.com/v1/forecast',
@@ -29,12 +30,56 @@ class WeatherController extends Controller
                 );
 
                 $weather = $response->json();
+
+                $temperature =
+                    $weather['current']['temperature_2m']
+                    ?? 0;
+
+                $wind =
+                    $weather['current']['wind_speed_10m']
+                    ?? 0;
+
+                $risk = 'Normal';
+
+                if ($wind > 40) {
+
+                    $risk = 'High Wind';
+
+                }
+
+                if ($wind > 70) {
+
+                    $risk = 'Storm Risk';
+
+                }
+
+                $weatherCountries[] = [
+
+                    'country' => $country->country_name,
+
+                    'lat' => $country->latitude,
+
+                    'lng' => $country->longitude,
+
+                    'temperature' => $temperature,
+
+                    'wind' => $wind,
+
+                    'risk' => $risk
+
+                ];
+
+            } catch (\Exception $e) {
+
             }
+
         }
 
-        return view('weather', compact(
-            'countries',
-            'weather'
-        ));
+        return view(
+            'weather',
+            compact(
+                'weatherCountries'
+            )
+        );
     }
 }
