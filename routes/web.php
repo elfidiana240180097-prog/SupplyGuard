@@ -14,20 +14,27 @@ use App\Http\Controllers\ComparisonController;
 use App\Http\Controllers\ReportController;
 use App\Http\Controllers\WatchlistController;
 use App\Http\Controllers\AnalyticsController;
+use App\Http\Controllers\AdminController;
+use App\Http\Controllers\UserController;
+use App\Http\Controllers\ArticleController;
 
 Route::get('/', function () {
     return redirect()->route('login');
 });
 
-Route::middleware(['auth'])->group(function () {
+Route::middleware('auth')->group(function () {
 
-    Route::get(
-    '/analytics',
-    [AnalyticsController::class, 'index']
-    )->middleware('auth');
+    /*
+    |--------------------------------------------------------------------------
+    | USER AREA
+    |--------------------------------------------------------------------------
+    */
 
     Route::get('/dashboard', [DashboardController::class, 'index'])
         ->name('dashboard');
+
+    Route::get('/analytics', [AnalyticsController::class, 'index'])
+        ->name('analytics');
 
     Route::resource('countries', CountriesController::class);
 
@@ -71,6 +78,32 @@ Route::middleware(['auth'])->group(function () {
 
     Route::delete('/profile', [ProfileController::class, 'destroy'])
         ->name('profile.destroy');
+});
+
+
+/*
+|--------------------------------------------------------------------------
+| ADMIN AREA
+|--------------------------------------------------------------------------
+*/
+
+Route::middleware(['auth','admin'])
+->prefix('admin')
+->group(function () {
+
+    Route::get(
+        '/dashboard',
+        [AdminController::class, 'dashboard']
+    )->name('admin.dashboard');
+
+    Route::resource('users', UserController::class);
+
+    Route::resource(
+    'articles',
+    ArticleController::class
+    );
+
+
 });
 
 require __DIR__.'/auth.php';

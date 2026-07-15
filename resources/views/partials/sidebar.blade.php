@@ -46,12 +46,9 @@
             </a>
 
             <a href="{{ route('watchlists.index') }}"
-            class="list-group-item list-group-item-action border-0 {{ request()->routeIs('watchlists.*') ? 'active' : '' }}">
-
-            <i class="bi bi-star-fill me-2"></i>
-
-            Watchlist
-
+               class="list-group-item list-group-item-action border-0 {{ request()->routeIs('watchlists.*') ? 'active' : '' }}">
+                <i class="bi bi-star-fill me-2"></i>
+                Watchlist
             </a>
 
             <a href="{{ route('weather') }}"
@@ -69,13 +66,13 @@
             <a href="{{ route('news') }}"
                class="list-group-item list-group-item-action border-0 {{ request()->routeIs('news') ? 'active' : '' }}">
                 <i class="bi bi-newspaper me-2"></i>
-                News
+                News Intelligence
             </a>
 
             <a href="{{ route('ports.index') }}"
                class="list-group-item list-group-item-action border-0 {{ request()->routeIs('ports.*') ? 'active' : '' }}">
                 <i class="bi bi-truck me-2"></i>
-                Ports
+                Port Management
             </a>
 
             <a href="{{ route('ports.map') }}"
@@ -96,15 +93,38 @@
                 Country Comparison
             </a>
 
-            <a href="{{ url('/analytics') }}"
-            class="list-group-item list-group-item-action border-0 {{ request()->is('analytics') ? 'active' : '' }}">
-            <i class="bi bi-graph-up-arrow me-2"></i>
-            Analytics Dashboard
+            <a href="{{ route('analytics') }}"
+               class="list-group-item list-group-item-action border-0 {{ request()->routeIs('analytics') ? 'active' : '' }}">
+                <i class="bi bi-graph-up-arrow me-2"></i>
+                Analytics Dashboard
             </a>
+
+<hr>
+
+<h6 class="text-muted px-3 mt-2">
+    ADMIN PANEL
+</h6>
+
+<a href="{{ route('users.index') }}"
+   class="list-group-item list-group-item-action border-0 {{ request()->routeIs('users.*') ? 'active' : '' }}">
+
+    <i class="bi bi-people-fill me-2"></i>
+
+    User Management
+
+</a>
+
+<a href="{{ route('articles.index') }}"
+   class="list-group-item list-group-item-action border-0 {{ request()->routeIs('articles.*') ? 'active' : '' }}">
+
+    <i class="bi bi-journal-text me-2"></i>
+
+    Articles Management
+
+</a>
 
         </div>
 
     </div>
 
 </div>
-

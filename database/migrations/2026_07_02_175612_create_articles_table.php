@@ -6,34 +6,28 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    public function up(): void
-    {
-        Schema::create('articles', function (Blueprint $table) {
+public function up(): void
+{
+    Schema::create('articles', function (Blueprint $table) {
 
-            $table->id();
+        $table->id();
 
-            $table->foreignId('country_id')->nullable()->constrained()->nullOnDelete();
+        $table->string('title');
 
-            $table->string('title');
+        $table->string('slug')->unique();
 
-            $table->string('source')->nullable();
+        $table->text('summary')->nullable();
 
-            $table->string('author')->nullable();
+        $table->longText('content');
 
-            $table->text('description')->nullable();
+        $table->string('image')->nullable();
 
-            $table->longText('content')->nullable();
+        $table->string('status')->default('draft');
 
-            $table->string('image')->nullable();
+        $table->timestamps();
 
-            $table->string('url')->nullable();
-
-            $table->dateTime('published_at')->nullable();
-
-            $table->timestamps();
-
-        });
-    }
+    });
+}
 
     public function down(): void
     {
