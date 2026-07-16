@@ -17,6 +17,8 @@ use App\Http\Controllers\AnalyticsController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\ArticleController;
+use App\Http\Controllers\MemberController;
+
 
 Route::get('/', function () {
     return redirect()->route('login');
@@ -103,6 +105,22 @@ Route::middleware(['auth','admin'])
     ArticleController::class
     );
 
+
+});
+
+/*
+|--------------------------------------------------------------------------
+| MEMBER AREA
+|--------------------------------------------------------------------------
+*/
+
+Route::middleware(['auth','member'])
+->group(function () {
+
+    Route::get(
+        '/member/dashboard',
+        [MemberController::class,'dashboard']
+    )->name('member.dashboard');
 
 });
 
