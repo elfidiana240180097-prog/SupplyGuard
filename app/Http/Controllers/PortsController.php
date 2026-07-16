@@ -10,7 +10,9 @@ class PortsController extends Controller
 {
     public function index()
     {
-        $countries = Country::orderBy('country_name')->get();
+        $countries = Country::whereHas('ports')
+        ->orderBy('country_name')
+        ->get();
 
         $selectedCountry = request('country');
 

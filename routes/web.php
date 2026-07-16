@@ -114,13 +114,44 @@ Route::middleware(['auth','admin'])
 |--------------------------------------------------------------------------
 */
 
-Route::middleware(['auth','member'])
+Route::middleware('auth')
+->prefix('member')
 ->group(function () {
 
     Route::get(
-        '/member/dashboard',
+        '/dashboard',
         [MemberController::class,'dashboard']
     )->name('member.dashboard');
+
+    Route::get(
+        '/news',
+        [MemberController::class,'news']
+    )->name('member.news');
+
+    Route::get(
+        '/weather',
+        [MemberController::class,'weather']
+    )->name('member.weather');
+
+    Route::get(
+        '/currency',
+        [MemberController::class,'currency']
+    )->name('member.currency');
+
+    Route::get(
+        '/watchlists',
+        [MemberController::class,'watchlists']
+    )->name('member.watchlists');
+
+    Route::get(
+    '/countries',
+    [MemberController::class,'countries']
+    )->name('member.countries');
+
+    Route::get(
+    '/ports',
+    [MemberController::class,'ports']
+    )->name('member.ports');
 
 });
 
