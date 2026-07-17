@@ -8,22 +8,56 @@
 
 <form method="GET" class="mb-4">
 
-    <div class="input-group">
+    <div class="row">
 
-        <input
-            type="text"
-            name="search"
-            class="form-control"
-            placeholder="Search Port..."
-            value="{{ request('search') }}">
+        <div class="col-md-4">
 
-        <button class="btn btn-primary">
+            <input
+                type="text"
+                name="search"
+                class="form-control"
+                placeholder="Search Port..."
+                value="{{ request('search') }}">
 
-            <i class="bi bi-search"></i>
+        </div>
 
-            Search
+        <div class="col-md-4">
 
-        </button>
+            <select
+                name="country"
+                class="form-select">
+
+                <option value="">
+                    All Countries
+                </option>
+
+                @foreach($countries as $country)
+
+                    <option
+                        value="{{ $country->country_code }}"
+                        {{ $selectedCountry == $country->country_code ? 'selected' : '' }}>
+
+                        {{ $country->country_name }}
+
+                    </option>
+
+                @endforeach
+
+            </select>
+
+        </div>
+
+        <div class="col-md-2">
+
+            <button
+                type="submit"
+                class="btn btn-primary">
+
+                Search
+
+            </button>
+
+        </div>
 
     </div>
 
@@ -147,7 +181,9 @@
 
         <tr>
 
-            <td>{{ $loop->iteration }}</td>
+            <td>
+            {{ ($ports->currentPage() - 1) * $ports->perPage() + $loop->iteration }}
+            </td>
 
             <td>{{ $port->port_name }}</td>
 
@@ -176,6 +212,12 @@
     </tbody>
 
 </table>
+
+<div class="mt-3 d-flex justify-content-center">
+
+    {{ $ports->withQueryString()->links() }}
+
+</div>
 
 </div>
 

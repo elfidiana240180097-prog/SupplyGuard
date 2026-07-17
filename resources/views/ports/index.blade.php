@@ -34,10 +34,20 @@
 
         <div class="col-md-4">
 
+            <input
+                type="text"
+                name="search"
+                class="form-control"
+                placeholder="Search Port Name..."
+                value="{{ request('search') }}">
+
+        </div>
+
+        <div class="col-md-4">
+
             <select
                 name="country"
-                class="form-select"
-                onchange="this.form.submit()">
+                class="form-select">
 
                 <option value="">
                     All Countries
@@ -56,6 +66,18 @@
                 @endforeach
 
             </select>
+
+        </div>
+
+        <div class="col-md-2">
+
+            <button
+                type="submit"
+                class="btn btn-primary">
+
+                Search
+
+            </button>
 
         </div>
 
@@ -193,7 +215,9 @@
 
         <tr>
 
-            <td>{{ $loop->iteration }}</td>
+            <td>
+            {{ ($ports->currentPage() - 1) * $ports->perPage() + $loop->iteration }}
+            </td>
 
             <td>{{ $port->port_name }}</td>
 
@@ -206,32 +230,32 @@
             <td>
 
                 <a href="{{ route('ports.edit',$port->id) }}"
-   class="btn btn-warning btn-sm">
+                class="btn btn-warning btn-sm">
 
-    <i class="bi bi-pencil-square"></i>
+                <i class="bi bi-pencil-square"></i>
 
-    Edit
+                Edit
 
-</a>
+                </a>
 
                 <form action="{{ route('ports.destroy',$port->id) }}"
-      method="POST"
-      class="d-inline">
+                method="POST"
+                class="d-inline">
 
-    @csrf
-    @method('DELETE')
+                @csrf
+                @method('DELETE')
 
-    <button
-        class="btn btn-danger btn-sm"
-        onclick="return confirm('Delete this port?')">
+                <button
+                class="btn btn-danger btn-sm"
+                onclick="return confirm('Delete this port?')">
 
-        <i class="bi bi-trash"></i>
+                <i class="bi bi-trash"></i>
 
-        Delete
+                Delete
 
-    </button>
+            </button>
 
-</form>
+            </form>
 
             </td>
 
@@ -264,6 +288,12 @@
     </tbody>
 
 </table>
+
+</div>
+
+<div class="mt-3">
+
+    {{ $ports->withQueryString()->links('pagination::bootstrap-5') }}
 
 </div>
 

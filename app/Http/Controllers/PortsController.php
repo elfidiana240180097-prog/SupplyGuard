@@ -8,86 +8,113 @@ use Illuminate\Http\Request;
 
 class PortsController extends Controller
 {
-    public function index()
-    {
-        $countries = Country::whereHas('ports')
+public function index()
+{
+    $countries = Country::whereHas('ports')
         ->orderBy('country_name')
         ->get();
 
-        $selectedCountry = request('country');
+    $selectedCountry = request('country');
 
-        $portsQuery = Port::with('country');
+    $search = request('search');
 
-        $selectedCountryName = null;
+    $portsQuery = Port::with('country');
 
-        if ($selectedCountry) {
+    if ($search) {
 
-            $country = Country::where(
-                'country_code',
-                $selectedCountry
-            )->first();
-
-            $selectedCountryName = $country?->country_name;
-
-            $portsQuery->whereHas(
-                'country',
-                function ($query) use ($selectedCountry) {
-
-                    $query->where(
-                        'country_code',
-                        $selectedCountry
-                    );
-
-                }
-            );
-        }
-
-        $ports = $portsQuery
-            ->orderBy('port_name')
-            ->get();
-
-        $mapPorts = $ports
-            ->whereNotNull('latitude')
-            ->whereNotNull('longitude')
-            ->values();
-
-        $countryPortCount = $ports->count();
-
-        $totalPorts = $ports->count();
-
-        $normalPorts = $ports
-            ->where('status', 'Normal')
-            ->count();
-
-        $busyPorts = $ports
-            ->where('status', 'Busy')
-            ->count();
-
-        $delayedPorts = $ports
-            ->where('status', 'Delayed')
-            ->count();
-
-        $closedPorts = $ports
-            ->where('status', 'Closed')
-            ->count();
-
-        return view(
-            'ports.index',
-            compact(
-                'ports',
-                'countries',
-                'selectedCountry',
-                'selectedCountryName',
-                'countryPortCount',
-                'mapPorts',
-                'totalPorts',
-                'normalPorts',
-                'busyPorts',
-                'delayedPorts',
-                'closedPorts'
-            )
+        $portsQuery->where(
+            'port_name',
+            'like',
+            '%' . $search . '%'
         );
     }
+
+    $selectedCountryName = null;
+
+    if ($selectedCountry) {
+
+        $country = Country::where(
+            'country_code',
+            $selectedCountry
+        )->first();
+
+        $selectedCountryName = $country?->country_name;
+
+        $portsQuery->whereHas(
+            'country',
+            function ($query) use ($selectedCountry) {
+
+                $query->where(
+                    'country_code',
+                    $selectedCountry
+                );
+
+            }
+        );
+    }
+
+    /*
+    |--------------------------------------------------------------------------
+    | Data untuk statistik & map
+    |--------------------------------------------------------------------------
+    */
+
+    $allPorts = (clone $portsQuery)
+        ->orderBy('port_name')
+        ->get();
+
+    /*
+    |--------------------------------------------------------------------------
+    | Data untuk tabel
+    |--------------------------------------------------------------------------
+    */
+
+    $ports = $portsQuery
+        ->orderBy('port_name')
+        ->paginate(10);
+
+    $mapPorts = $allPorts
+        ->whereNotNull('latitude')
+        ->whereNotNull('longitude')
+        ->values();
+
+    $countryPortCount = $allPorts->count();
+
+    $totalPorts = $allPorts->count();
+
+    $normalPorts = $allPorts
+        ->where('status', 'Normal')
+        ->count();
+
+    $busyPorts = $allPorts
+        ->where('status', 'Busy')
+        ->count();
+
+    $delayedPorts = $allPorts
+        ->where('status', 'Delayed')
+        ->count();
+
+    $closedPorts = $allPorts
+        ->where('status', 'Closed')
+        ->count();
+
+    return view(
+        'ports.index',
+        compact(
+            'ports',
+            'countries',
+            'selectedCountry',
+            'selectedCountryName',
+            'countryPortCount',
+            'mapPorts',
+            'totalPorts',
+            'normalPorts',
+            'busyPorts',
+            'delayedPorts',
+            'closedPorts'
+        )
+    );
+}
 
     public function create()
     {
