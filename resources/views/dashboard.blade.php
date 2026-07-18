@@ -2,53 +2,444 @@
 
 @section('content')
 
+<div class="container-fluid">
+
+    <div class="row mb-4">
+
+        <div class="col-md-12">
+
+            <div class="card border-0 shadow">
+
+                <div class="card-body">
+
+                    <div class="d-flex justify-content-between align-items-center flex-wrap">
+
+                        <div>
+
+                            <h2 class="fw-bold text-success mb-1">
+
+                                SupplyGuard Dashboard
+
+                            </h2>
+
+                            <p class="text-muted mb-0">
+
+                                Welcome back,
+                                <strong>{{ Auth::user()->name }}</strong>
+
+                            </p>
+
+                        </div>
+
+                        <div>
+
+                            <small class="text-muted">
+
+                            </small>
+
+                            <br>
+
+                            <strong>
+
+                            </strong>
+
+                        </div>
+
+                    </div>
+
+                    <hr>
+
+                    <form method="GET" action="{{ route('dashboard') }}">
+
+                        <div class="row">
+
+                            <div class="col-md-4">
+
+                                <select
+                                    name="country"
+                                    class="form-select"
+                                    onchange="this.form.submit()">
+
+                                    @foreach($countries as $country)
+
+                                        <option
+                                            value="{{ $country->country_code }}"
+                                            {{ $selectedCountry==$country->country_code ? 'selected':'' }}>
+
+                                            {{ $country->country_name }}
+
+                                        </option>
+
+                                    @endforeach
+
+                                </select>
+
+                            </div>
+
+                        </div>
+
+                    </form>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    {{-- ===================== --}}
+    {{-- SUMMARY CARD --}}
+    {{-- ===================== --}}
+
+    <div class="row">
+
+        <div class="col-lg-3 col-md-6 mb-4">
+
+            <div class="card border-0 shadow-sm h-100">
+
+                <div class="card-body text-center">
+
+                    <h6 class="text-muted">
+
+                        Selected Country
+
+                    </h6>
+
+                    <h3 class="fw-bold text-success">
+
+                        {{ $countryData->country_name ?? '-' }}
+
+                    </h3>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <div class="col-lg-3 col-md-6 mb-4">
+
+            <div class="card border-0 shadow-sm h-100">
+
+                <div class="card-body text-center">
+
+                    <h6 class="text-muted">
+
+                        Population
+
+                    </h6>
+
+                    <h3 class="fw-bold text-primary">
+
+                        {{ number_format($population) }}
+
+                    </h3>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <div class="col-lg-3 col-md-6 mb-4">
+
+            <div class="card border-0 shadow-sm h-100">
+
+                <div class="card-body text-center">
+
+                    <h6 class="text-muted">
+
+                        GDP
+
+                    </h6>
+
+                    <h3 class="fw-bold text-success">
+
+                        ${{ number_format($gdp,0) }}
+
+                    </h3>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <div class="col-lg-3 col-md-6 mb-4">
+
+            <div class="card border-0 shadow-sm h-100">
+
+                <div class="card-body text-center">
+
+                    <h6 class="text-muted">
+
+                        Inflation
+
+                    </h6>
+
+                    <h3 class="fw-bold text-danger">
+
+                        {{ number_format($inflation,2) }} %
+
+                    </h3>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <div class="row">
+
+        <div class="col-lg-3 col-md-6 mb-4">
+
+            <div class="card border-0 shadow-sm">
+
+                <div class="card-body text-center">
+
+                    <h6>Total Countries</h6>
+
+                    <h2 class="fw-bold text-primary">
+
+                        {{ $totalCountries }}
+
+                    </h2>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <div class="col-lg-3 col-md-6 mb-4">
+
+            <div class="card border-0 shadow-sm">
+
+                <div class="card-body text-center">
+
+                    <h6>High Risk</h6>
+
+                    <h2 class="fw-bold text-danger">
+
+                        {{ $highRiskCountries }}
+
+                    </h2>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <div class="col-lg-3 col-md-6 mb-4">
+
+            <div class="card border-0 shadow-sm">
+
+                <div class="card-body text-center">
+
+                    <h6>Medium Risk</h6>
+
+                    <h2 class="fw-bold text-warning">
+
+                        {{ $mediumRiskCountries }}
+
+                    </h2>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <div class="col-lg-3 col-md-6 mb-4">
+
+            <div class="card border-0 shadow-sm">
+
+                <div class="card-body text-center">
+
+                    <h6>Low Risk</h6>
+
+                    <h2 class="fw-bold text-success">
+
+                        {{ $lowRiskCountries }}
+
+                    </h2>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <div class="row">
+
+        <div class="col-md-4 mb-4">
+
+            <div class="card shadow border-0 h-100">
+
+                <div class="card-body text-center">
+
+                    <h6 class="text-muted">
+
+                        Currency Rate
+
+                    </h6>
+
+                    <h2 class="fw-bold text-warning">
+
+                        {{ number_format($currency,2) }}
+
+                    </h2>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <div class="col-md-4 mb-4">
+
+            <div class="card shadow border-0 h-100">
+
+                <div class="card-body text-center">
+
+                    <h6 class="text-muted">
+
+                        Temperature
+
+                    </h6>
+
+                    <h2 class="fw-bold text-info">
+
+                        {{ $temperature }} °C
+
+                    </h2>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <div class="col-md-4 mb-4">
+
+            <div class="card shadow border-0 h-100">
+
+                <div class="card-body text-center">
+
+                    <h6 class="text-muted">
+
+                        Supply Chain Risk
+
+                    </h6>
+
+                    <h1 class="fw-bold">
+
+                        {{ $riskScore }}
+
+                    </h1>
+
+                    @if($riskLevel=="Low")
+
+                        <span class="badge bg-success">
+
+                            LOW
+
+                        </span>
+
+                    @elseif($riskLevel=="Medium")
+
+                        <span class="badge bg-warning">
+
+                            MEDIUM
+
+                        </span>
+
+                    @elseif($riskLevel=="High")
+
+                        <span class="badge bg-danger">
+
+                            HIGH
+
+                        </span>
+
+                    @else
+
+                        <span class="badge bg-dark">
+
+                            CRITICAL
+
+                        </span>
+
+                    @endif
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    {{-- ====================================================== --}}
+{{-- GLOBAL MAP + RISK COMPONENT --}}
+{{-- ====================================================== --}}
+
 <div class="row">
 
-    <div class="col-md-12 mb-4">
+    <div class="col-lg-8 mb-4">
 
-        <div class="card shadow border-0">
+        <div class="card border-0 shadow h-100">
+
+            <div class="card-header bg-white">
+
+                <h5 class="mb-0 fw-bold">
+
+                    🌍 Global Monitoring Map
+
+                </h5>
+
+            </div>
 
             <div class="card-body">
 
-                <h2 class="fw-bold text-success">
-                    SupplyGuard Dashboard
-                </h2>
+                <div
+                    id="worldMap"
+                    style="height:500px;border-radius:10px;">
 
-                <p class="text-muted mb-0">
-                    Welcome back,
-                    <strong>{{ Auth::user()->name }}</strong>
+                </div>
 
-                    <form method="GET" action="{{ route('dashboard') }}" class="mt-3">
-
-    <div class="row">
-
-        <div class="col-md-4">
-
-            <select
-                name="country"
-                class="form-select"
-                onchange="this.form.submit()">
-
-                @foreach($countries as $country)
-
-                    <option
-                        value="{{ $country->country_code }}"
-                        {{ $selectedCountry == $country->country_code ? 'selected' : '' }}>
-
-                        {{ $country->country_name }}
-
-                    </option>
-
-                @endforeach
-
-            </select>
+            </div>
 
         </div>
 
     </div>
 
-</form>
-                </p>
+    <div class="col-lg-4 mb-4">
+
+        <div class="card border-0 shadow h-100">
+
+            <div class="card-header bg-white">
+
+                <h5 class="fw-bold mb-0">
+
+                    Risk Components
+
+                </h5>
+
+            </div>
+
+            <div class="card-body">
+
+                <canvas id="riskRadarChart"></canvas>
 
             </div>
 
@@ -57,22 +448,30 @@
     </div>
 
 </div>
+
+{{-- ====================================================== --}}
+{{-- PIE CHART + TOP RANKING --}}
+{{-- ====================================================== --}}
 
 <div class="row">
 
-    <div class="col-md mb-4">
+    <div class="col-lg-5 mb-4">
 
-        <div class="card shadow-sm border-0 h-100">
+        <div class="card border-0 shadow h-100">
 
-            <div class="card-body text-center">
+            <div class="card-header bg-white">
 
-                <h6 class="text-muted">
-                    Population
-                </h6>
+                <h5 class="fw-bold mb-0">
 
-                <h4 class="fw-bold text-success">
-                    {{ $population ? number_format($population) : 'N/A' }}
-                </h4>
+                    Risk Distribution
+
+                </h5>
+
+            </div>
+
+            <div class="card-body">
+
+                <canvas id="riskPieChart"></canvas>
 
             </div>
 
@@ -80,155 +479,113 @@
 
     </div>
 
-    <div class="row">
+    <div class="col-lg-7 mb-4">
 
-    <div class="col-md-3 mb-4">
+        <div class="card border-0 shadow h-100">
 
-        <div class="card shadow-sm border-0">
+            <div class="card-header bg-white">
 
-            <div class="card-body text-center">
+                <h5 class="fw-bold mb-0">
 
-                <h6>Total Countries</h6>
+                    Top 5 Highest Risk Countries
 
-                <h3 class="fw-bold text-primary">
-                    {{ $totalCountries }}
-                </h3>
+                </h5>
 
             </div>
 
-        </div>
+            <div class="card-body">
 
-    </div>
+                <table class="table table-hover align-middle">
 
-    <div class="col-md-3 mb-4">
+                    <thead>
 
-        <div class="card shadow-sm border-0">
+                    <tr>
 
-            <div class="card-body text-center">
+                        <th>#</th>
 
-                <h6>High Risk</h6>
+                        <th>Country</th>
 
-                <h3 class="fw-bold text-danger">
-                    {{ $highRiskCountries }}
-                </h3>
+                        <th>Risk</th>
 
-            </div>
+                        <th>Status</th>
 
-        </div>
+                    </tr>
 
-    </div>
+                    </thead>
 
-    <div class="col-md-3 mb-4">
+                    <tbody>
 
-        <div class="card shadow-sm border-0">
+                    @foreach($topRiskCountries as $index=>$country)
 
-            <div class="card-body text-center">
+                        <tr>
 
-                <h6>Medium Risk</h6>
+                            <td>
 
-                <h3 class="fw-bold text-warning">
-                    {{ $mediumRiskCountries }}
-                </h3>
+                                {{ $index+1 }}
 
-            </div>
+                            </td>
 
-        </div>
+                            <td>
 
-    </div>
+                                {{ $country->country->country_name }}
 
-    <div class="col-md-3 mb-4">
+                            </td>
 
-        <div class="card shadow-sm border-0">
+                            <td>
 
-            <div class="card-body text-center">
+                                <strong>
 
-                <h6>Low Risk</h6>
+                                    {{ number_format($country->overall_score,2) }}
 
-                <h3 class="fw-bold text-success">
-                    {{ $lowRiskCountries }}
-                </h3>
+                                </strong>
 
-            </div>
+                            </td>
 
-        </div>
+                            <td>
 
-    </div>
+                                @if($country->risk_level=="Low")
 
-</div>
+                                    <span class="badge bg-success">
 
-    <div class="col-md mb-4">
+                                        Low
 
-        <div class="card shadow-sm border-0 h-100">
+                                    </span>
 
-            <div class="card-body text-center">
+                                @elseif($country->risk_level=="Medium")
 
-                <h6 class="text-muted">
-                    GDP
-                </h6>
+                                    <span class="badge bg-warning">
 
-                <h4 class="fw-bold text-primary">
-                    {{ $gdp ? '$'.number_format($gdp) : 'N/A' }}
-                </h4>
+                                        Medium
 
-            </div>
+                                    </span>
 
-        </div>
+                                @elseif($country->risk_level=="High")
 
-    </div>
+                                    <span class="badge bg-danger">
 
-    <div class="col-md mb-4">
+                                        High
 
-        <div class="card shadow-sm border-0 h-100">
+                                    </span>
 
-            <div class="card-body text-center">
+                                @else
 
-                <h6 class="text-muted">
-                    Inflation
-                </h6>
+                                    <span class="badge bg-dark">
 
-                <h4 class="fw-bold text-danger">
-                    {{ $inflation ? round($inflation,2).' %' : 'N/A' }}
-                </h4>
+                                        Critical
 
-            </div>
+                                    </span>
 
-        </div>
+                                @endif
 
-    </div>
+                            </td>
 
-    <div class="col-md mb-4">
+                        </tr>
 
-        <div class="card shadow-sm border-0 h-100">
+                    @endforeach
 
-            <div class="card-body text-center">
+                    </tbody>
 
-                <h6 class="text-muted">
-                    Currency
-                </h6>
-
-                <h4 class="fw-bold text-warning">
-                    {{ $currency ? 'IDR '.number_format($currency,0) : 'N/A' }}
-                </h4>
-
-            </div>
-
-        </div>
-
-    </div>
-
-    <div class="col-md mb-4">
-
-        <div class="card shadow-sm border-0 h-100">
-
-            <div class="card-body text-center">
-
-                <h6 class="text-muted">
-                    Weather
-                </h6>
-
-                <h4 class="fw-bold text-info">
-                    {{ $temperature ? $temperature.' °C' : 'N/A' }}
-                </h4>
+                </table>
 
             </div>
 
@@ -238,93 +595,211 @@
 
 </div>
 
-<div class="card shadow border-0 mb-4">
+{{-- ====================================================== --}}
+{{-- RISK PROGRESS --}}
+{{-- ====================================================== --}}
 
-    <div class="card-body text-center">
+<div class="card border-0 shadow mb-4">
 
-        <h5 class="text-muted">
-            Supply Chain Risk Score
-        </h5>
+    <div class="card-header bg-white">
 
-        <h1 class="fw-bold">
+        <h5 class="fw-bold mb-0">
 
-            {{ $riskScore }}
+            Overall Supply Chain Risk
 
-        </h1>
-
-        @if($riskLevel == 'Low')
-
-            <span class="badge bg-success fs-6">
-                LOW RISK
-            </span>
-
-        @elseif($riskLevel == 'Medium')
-
-            <span class="badge bg-warning fs-6">
-                MEDIUM RISK
-            </span>
-
-        @elseif($riskLevel == 'High')
-
-            <span class="badge bg-danger fs-6">
-                HIGH RISK
-            </span>
-
-        @else
-
-            <span class="badge bg-dark fs-6">
-                CRITICAL RISK
-            </span>
-
-        @endif
-
-    </div>
-
-</div>
-
-<div class="card shadow border-0 mt-4">
-
-    <div class="card-header">
-
-        <h5 class="mb-0">
-            Global Monitoring Map
         </h5>
 
     </div>
 
     <div class="card-body">
 
-        <div id="worldMap"
-             style="height:500px;">
+        <div class="progress" style="height:30px;">
+
+            <div
+
+                class="progress-bar
+
+                @if($riskScore<40)
+
+                    bg-success
+
+                @elseif($riskScore<60)
+
+                    bg-warning
+
+                @elseif($riskScore<80)
+
+                    bg-danger
+
+                @else
+
+                    bg-dark
+
+                @endif"
+
+                role="progressbar"
+
+                style="width: {{ min($riskScore,100) }}%;">
+
+                {{ $riskScore }}
+
+            </div>
+
         </div>
 
     </div>
 
 </div>
 
-
-
 @push('scripts')
+
+<!-- Chart.js -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<!-- Leaflet -->
+<link
+    rel="stylesheet"
+    href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
 <script>
 
-var lat = {{ $countryData->latitude ?? 0 }};
-var lng = {{ $countryData->longitude ?? 0 }};
+document.addEventListener("DOMContentLoaded",function(){
 
-var map = L.map('worldMap').setView([lat, lng], 4);
+    /*
+    |--------------------------------------------------------------------------
+    | GLOBAL MAP
+    |--------------------------------------------------------------------------
+    */
 
-L.tileLayer(
-'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
-{
-    maxZoom: 19
-}
-).addTo(map);
+    const latitude={{ $mapLat }};
+    const longitude={{ $mapLng }};
 
-L.marker([lat, lng])
-.addTo(map)
-.bindPopup(
-'{{ $countryData->country_name ?? "Country" }}'
-);
+    const map=L.map('worldMap').setView(
+        [latitude,longitude],
+        4
+    );
+
+    L.tileLayer(
+        'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+        {
+            maxZoom:19,
+            attribution:'© OpenStreetMap'
+        }
+    ).addTo(map);
+
+    L.marker([latitude,longitude])
+        .addTo(map)
+        .bindPopup(
+            "<b>{{ $countryData->country_name }}</b>"
+        )
+        .openPopup();
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | RADAR CHART
+    |--------------------------------------------------------------------------
+    */
+
+    new Chart(
+
+        document.getElementById('riskRadarChart'),
+
+        {
+
+            type:'radar',
+
+            data:{
+
+                labels:[
+                    'Weather',
+                    'Inflation',
+                    'Currency',
+                    'News',
+                    'Port'
+                ],
+
+                datasets:[{
+
+                    label:'Risk Score',
+
+                    data:@json($riskComponents),
+
+                    fill:true
+
+                }]
+
+            },
+
+            options:{
+
+                responsive:true,
+
+                scales:{
+                    r:{
+                        beginAtZero:true,
+                        suggestedMax:50
+                    }
+                }
+
+            }
+
+        }
+
+    );
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | PIE CHART
+    |--------------------------------------------------------------------------
+    */
+
+    new Chart(
+
+        document.getElementById('riskPieChart'),
+
+        {
+
+            type:'pie',
+
+            data:{
+
+                labels:[
+                    'Low',
+                    'Medium',
+                    'High'
+                ],
+
+                datasets:[{
+
+                    data:@json($riskDistribution)
+
+                }]
+
+            },
+
+            options:{
+
+                responsive:true,
+
+                plugins:{
+
+                    legend:{
+                        position:'bottom'
+                    }
+
+                }
+
+            }
+
+        }
+
+    );
+
+});
 
 </script>
 

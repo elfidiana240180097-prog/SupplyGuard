@@ -36,7 +36,6 @@ class DashboardController extends Controller
         $population = 0;
         $gdp = 0;
         $inflation = 0;
-
         $currency = 0;
         $temperature = 0;
 
@@ -49,37 +48,43 @@ class DashboardController extends Controller
 
             /*
             |--------------------------------------------------------------------------
-            | World Bank API
+            | Population
             |--------------------------------------------------------------------------
             */
 
-            $populationResponse = Http::get(
-                "https://api.worldbank.org/v2/country/{$selectedCountry}/indicator/SP.POP.TOTL?format=json"
-            );
-
             $population = $this->getLatestValue(
-                $populationResponse
-            );
-
-            $gdpResponse = Http::get(
-                "https://api.worldbank.org/v2/country/{$selectedCountry}/indicator/NY.GDP.MKTP.CD?format=json"
-            );
-
-            $gdp = $this->getLatestValue(
-                $gdpResponse
-            );
-
-            $inflationResponse = Http::get(
-                "https://api.worldbank.org/v2/country/{$selectedCountry}/indicator/FP.CPI.TOTL.ZG?format=json"
-            );
-
-            $inflation = $this->getLatestValue(
-                $inflationResponse
+                Http::get(
+                    "https://api.worldbank.org/v2/country/{$selectedCountry}/indicator/SP.POP.TOTL?format=json"
+                )
             );
 
             /*
             |--------------------------------------------------------------------------
-            | Exchange Rate API
+            | GDP
+            |--------------------------------------------------------------------------
+            */
+
+            $gdp = $this->getLatestValue(
+                Http::get(
+                    "https://api.worldbank.org/v2/country/{$selectedCountry}/indicator/NY.GDP.MKTP.CD?format=json"
+                )
+            );
+
+            /*
+            |--------------------------------------------------------------------------
+            | Inflation
+            |--------------------------------------------------------------------------
+            */
+
+            $inflation = $this->getLatestValue(
+                Http::get(
+                    "https://api.worldbank.org/v2/country/{$selectedCountry}/indicator/FP.CPI.TOTL.ZG?format=json"
+                )
+            );
+
+            /*
+            |--------------------------------------------------------------------------
+            | Currency
             |--------------------------------------------------------------------------
             */
 
@@ -95,7 +100,7 @@ class DashboardController extends Controller
 
             /*
             |--------------------------------------------------------------------------
-            | Open Meteo API
+            | Weather
             |--------------------------------------------------------------------------
             */
 
@@ -166,6 +171,65 @@ class DashboardController extends Controller
             'Low'
         )->count();
 
+        /*
+        |--------------------------------------------------------------------------
+        | Top 5 Highest Risk Countries
+        |--------------------------------------------------------------------------
+        */
+
+        $topRiskCountries = RiskScore::with('country')
+            ->orderByDesc('overall_score')
+            ->take(5)
+            ->get();
+
+        /*
+        |--------------------------------------------------------------------------
+        | Radar Chart
+        |--------------------------------------------------------------------------
+        */
+
+        $riskComponents = [
+
+            $riskData->weather_score ?? 0,
+            $riskData->inflation_score ?? 0,
+            $riskData->currency_score ?? 0,
+            $riskData->news_score ?? 0,
+            $riskData->port_score ?? 0
+
+        ];
+
+        /*
+        |--------------------------------------------------------------------------
+        | Pie Chart
+        |--------------------------------------------------------------------------
+        */
+
+        $riskDistribution = [
+
+            $lowRiskCountries,
+            $mediumRiskCountries,
+            $highRiskCountries
+
+        ];
+
+        /*
+        |--------------------------------------------------------------------------
+        | Map
+        |--------------------------------------------------------------------------
+        */
+
+        $mapLat = $countryData->latitude ?? 0;
+
+        $mapLng = $countryData->longitude ?? 0;
+
+        /*
+        |--------------------------------------------------------------------------
+        | Last Update
+        |--------------------------------------------------------------------------
+        */
+
+        $lastUpdate = now()->format('d M Y H:i');
+
         return view(
             'dashboard',
             compact(
@@ -182,7 +246,13 @@ class DashboardController extends Controller
                 'totalCountries',
                 'highRiskCountries',
                 'mediumRiskCountries',
-                'lowRiskCountries'
+                'lowRiskCountries',
+                'topRiskCountries',
+                'riskComponents',
+                'riskDistribution',
+                'mapLat',
+                'mapLng',
+                'lastUpdate'
             )
         );
     }
