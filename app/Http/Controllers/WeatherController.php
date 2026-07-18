@@ -8,82 +8,80 @@ use Illuminate\Support\Facades\Http;
 class WeatherController extends Controller
 {
     public function index()
-{
-    $countries = Country::whereNotNull('latitude')
-        ->whereNotNull('longitude')
-        ->orderBy('country_name')
-        ->paginate(30);
+    {
+        $countries = Country::whereNotNull('latitude')
+            ->whereNotNull('longitude')
+            ->orderBy('country_name')
+            ->limit(40)
+            ->get();
 
-    $weatherCountries = [];
+        $weatherCountries = [];
 
-    foreach ($countries as $country) {
+        foreach ($countries as $country) {
 
-        try {
+            try {
 
-            $response = Http::get(
-                'https://api.open-meteo.com/v1/forecast',
-                [
-                    'latitude' => $country->latitude,
-                    'longitude' => $country->longitude,
-                    'current' => 'temperature_2m,wind_speed_10m'
-                ]
-            );
+                $response = Http::timeout(5)->get(
+                    'https://api.open-meteo.com/v1/forecast',
+                    [
+                        'latitude' => $country->latitude,
+                        'longitude' => $country->longitude,
+                        'current' => 'temperature_2m,wind_speed_10m,rain'
+                    ]
+                );
 
-            $weather = $response->json();
+                if (!$response->successful()) {
+                    continue;
+                }
 
-            $temperature =
-                $weather['current']['temperature_2m']
-                ?? 0;
+                $weather = $response->json();
 
-            $wind =
-                $weather['current']['wind_speed_10m']
-                ?? 0;
+                $temperature =
+                    $weather['current']['temperature_2m']
+                    ?? 0;
 
-            $risk = 'Normal';
+                $wind =
+                    $weather['current']['wind_speed_10m']
+                    ?? 0;
 
-            if ($wind > 70) {
+                $rain =
+                    $weather['current']['rain']
+                    ?? 0;
 
-                $risk = 'Storm Risk';
+                $risk = 'Low';
 
-            } elseif ($wind > 40) {
+                if ($wind >= 40 || $rain >= 10) {
+                    $risk = 'Medium';
+                }
 
-                $risk = 'High Wind';
+                if ($wind >= 70 || $rain >= 30) {
+                    $risk = 'High';
+                }
 
+                $weatherCountries[] = [
+
+                    'country' => $country->country_name,
+                    'country_code' => $country->country_code,
+
+                    'lat' => $country->latitude,
+                    'lng' => $country->longitude,
+
+                    'temperature' => $temperature,
+                    'wind' => $wind,
+                    'rain' => $rain,
+
+                    'risk' => $risk
+                ];
+
+            } catch (\Exception $e) {
+
+                continue;
             }
-
-            $weatherCountries[] = [
-
-                'country' => $country->country_name,
-
-                'country_code' => $country->country_code,
-
-                'flag' => $country->flag,
-
-                'lat' => $country->latitude,
-
-                'lng' => $country->longitude,
-
-                'temperature' => $temperature,
-
-                'wind' => $wind,
-
-                'risk' => $risk
-
-            ];
-
-        } catch (\Exception $e) {
-
-            continue;
-
         }
 
+        return view(
+            'weather',
+            compact('weatherCountries')
+        );
     }
-
-    return view(
-        'weather',
-        compact(
-            'weatherCountries'
-        )
-    );
-}
 }

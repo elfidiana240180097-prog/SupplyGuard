@@ -2,9 +2,19 @@
 
 @section('content')
 
-<h2 class="fw-bold mb-4">
-    Analytics Dashboard
-</h2>
+<div class="d-flex justify-content-between align-items-center mb-4">
+
+    <div>
+        <h2 class="fw-bold mb-1">
+            Analytics Dashboard
+        </h2>
+
+        <p class="text-muted mb-0">
+            Business Intelligence & Supply Chain Analytics
+        </p>
+    </div>
+
+</div>
 
 <form method="GET" class="mb-4">
 
@@ -14,7 +24,7 @@
 
             <select
                 name="country"
-                class="form-select"
+                class="form-select shadow-sm"
                 onchange="this.form.submit()">
 
                 @foreach($countries as $country)
@@ -39,9 +49,10 @@
 
 <div class="row mb-4">
 
-    <div class="col-md-3">
+    <div class="col-md-3 mb-3">
 
-        <div class="card border-0 shadow-sm">
+        <div class="card border-0 shadow-sm h-100">
+
             <div class="card-body text-center">
 
                 <h6 class="text-muted">
@@ -53,13 +64,15 @@
                 </h4>
 
             </div>
+
         </div>
 
     </div>
 
-    <div class="col-md-3">
+    <div class="col-md-3 mb-3">
 
-        <div class="card border-0 shadow-sm">
+        <div class="card border-0 shadow-sm h-100">
+
             <div class="card-body text-center">
 
                 <h6 class="text-muted">
@@ -71,13 +84,15 @@
                 </h4>
 
             </div>
+
         </div>
 
     </div>
 
-    <div class="col-md-3">
+    <div class="col-md-3 mb-3">
 
-        <div class="card border-0 shadow-sm">
+        <div class="card border-0 shadow-sm h-100">
+
             <div class="card-body text-center">
 
                 <h6 class="text-muted">
@@ -89,13 +104,15 @@
                 </h4>
 
             </div>
+
         </div>
 
     </div>
 
-    <div class="col-md-3">
+    <div class="col-md-3 mb-3">
 
-        <div class="card border-0 shadow-sm">
+        <div class="card border-0 shadow-sm h-100">
+
             <div class="card-body text-center">
 
                 <h6 class="text-muted">
@@ -107,13 +124,14 @@
                 </h4>
 
             </div>
+
         </div>
 
     </div>
 
 </div>
 
-<div class="card border-0 shadow-sm">
+<div class="card border-0 shadow-sm mb-4">
 
     <div class="card-header bg-white">
 
@@ -125,7 +143,95 @@
 
     <div class="card-body">
 
-        <canvas id="riskChart" height="110"></canvas>
+        <canvas id="riskChart"></canvas>
+
+    </div>
+
+</div>
+
+<div class="row">
+
+    <div class="col-md-6 mb-4">
+
+        <div class="card shadow-sm border-0">
+
+            <div class="card-header bg-white">
+
+                GDP Trend
+
+            </div>
+
+            <div class="card-body">
+
+                <canvas id="gdpChart"></canvas>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <div class="col-md-6 mb-4">
+
+        <div class="card shadow-sm border-0">
+
+            <div class="card-header bg-white">
+
+                Inflation Trend
+
+            </div>
+
+            <div class="card-body">
+
+                <canvas id="inflationChart"></canvas>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+<div class="row">
+
+    <div class="col-md-6 mb-4">
+
+        <div class="card shadow-sm border-0">
+
+            <div class="card-header bg-white">
+
+                Currency Trend
+
+            </div>
+
+            <div class="card-body">
+
+                <canvas id="currencyChart"></canvas>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <div class="col-md-6 mb-4">
+
+        <div class="card shadow-sm border-0">
+
+            <div class="card-header bg-white">
+
+                Risk Trend
+
+            </div>
+
+            <div class="card-body">
+
+                <canvas id="riskTrendChart"></canvas>
+
+            </div>
+
+        </div>
 
     </div>
 
@@ -139,22 +245,13 @@
 
 <script>
 
-const ctx = document.getElementById('riskChart');
+new Chart(
+document.getElementById('riskChart'),
+{
+    type:'radar',
 
-const gradient = ctx
-    .getContext('2d')
-    .createLinearGradient(0, 0, 0, 400);
-
-gradient.addColorStop(0, 'rgba(25,135,84,0.45)');
-gradient.addColorStop(1, 'rgba(25,135,84,0.02)');
-
-new Chart(ctx, {
-
-    type: 'line',
-
-    data: {
-
-        labels: [
+    data:{
+        labels:[
             'Weather',
             'Inflation',
             'Currency',
@@ -162,68 +259,101 @@ new Chart(ctx, {
             'Port'
         ],
 
-        datasets: [{
-
-            label: 'Risk Score',
-
-            data: [
-
+        datasets:[{
+            label:'Risk Components',
+            data:[
                 {{ $risk->weather_score ?? 0 }},
                 {{ $risk->inflation_score ?? 0 }},
                 {{ $risk->currency_score ?? 0 }},
                 {{ $risk->news_score ?? 0 }},
                 {{ $risk->port_score ?? 0 }}
-
-            ],
-
-            borderWidth: 4,
-
-            borderColor: '#198754',
-
-            backgroundColor: gradient,
-
-            fill: true,
-
-            tension: 0.45,
-
-            pointRadius: 6,
-
-            pointHoverRadius: 9,
-
-            pointBackgroundColor: '#198754'
-
+            ]
         }]
-
-    },
-
-    options: {
-
-        responsive: true,
-
-        plugins: {
-
-            legend: {
-
-                display: true
-
-            }
-
-        },
-
-        scales: {
-
-            y: {
-
-                beginAtZero: true,
-
-                max: 60
-
-            }
-
-        }
-
     }
+});
 
+new Chart(
+document.getElementById('gdpChart'),
+{
+    type:'line',
+
+    data:{
+        labels:[
+            '2021',
+            '2022',
+            '2023',
+            '2024',
+            '2025'
+        ],
+
+        datasets:[{
+            label:'GDP',
+            data:@json($gdpTrend)
+        }]
+    }
+});
+
+new Chart(
+document.getElementById('inflationChart'),
+{
+    type:'line',
+
+    data:{
+        labels:[
+            '2021',
+            '2022',
+            '2023',
+            '2024',
+            '2025'
+        ],
+
+        datasets:[{
+            label:'Inflation',
+            data:@json($inflationTrend)
+        }]
+    }
+});
+
+new Chart(
+document.getElementById('currencyChart'),
+{
+    type:'line',
+
+    data:{
+        labels:[
+            'Day 1',
+            'Day 2',
+            'Day 3',
+            'Day 4',
+            'Day 5'
+        ],
+
+        datasets:[{
+            label:'Currency',
+            data:@json($currencyTrend)
+        }]
+    }
+});
+
+new Chart(
+document.getElementById('riskTrendChart'),
+{
+    type:'bar',
+
+    data:{
+        labels:[
+            'Period 1',
+            'Period 2',
+            'Period 3',
+            'Period 4',
+            'Current'
+        ],
+
+        datasets:[{
+            label:'Risk Score',
+            data:@json($riskTrend)
+        }]
+    }
 });
 
 </script>

@@ -82,19 +82,54 @@ class RiskController extends Controller
 
         }
 
+
+                $currency = $countryModel->currency_code ?? '-';
+
+        $temperature = 0;
+        $windspeed = 0;
+        $exchangeRate = 1;
+
+        try {
+
+        $weatherResponse = Http::get(
+        'https://api.open-meteo.com/v1/forecast',
+        [
+            'latitude' => $countryModel->latitude,
+            'longitude' => $countryModel->longitude,
+            'current' => 'temperature_2m,wind_speed_10m'
+        ]
+    );
+
+    $weather = $weatherResponse->json();
+
+    $temperature =
+        $weather['current']['temperature_2m']
+        ?? 0;
+
+    $windspeed =
+        $weather['current']['wind_speed_10m']
+        ?? 0;
+
+} catch (\Exception $e) {
+
+}
+        
+
         /*
         |--------------------------------------------------------------------------
         | Weather Risk
         |--------------------------------------------------------------------------
         */
 
-        $weatherRisk = 15;
+        $weatherRisk = 10;
 
-        if ($population > 100000000) {
+if ($windspeed > 40) {
+    $weatherRisk = 25;
+}
 
-            $weatherRisk = 25;
-
-        }
+if ($windspeed > 70) {
+    $weatherRisk = 40;
+}
 
         /*
         |--------------------------------------------------------------------------
@@ -122,7 +157,17 @@ class RiskController extends Controller
         |--------------------------------------------------------------------------
         */
 
-        $currencyRisk = 15;
+        $currencyRisk = 10;
+
+if ($exchangeRate > 100) {
+    $currencyRisk = 20;
+}
+
+if ($exchangeRate > 1000) {
+    $currencyRisk = 30;
+}
+
+        
 
         /*
         |--------------------------------------------------------------------------
@@ -263,35 +308,6 @@ if ($negativePercent >= 60) {
         |--------------------------------------------------------------------------
         */
 
-        $currency = $countryModel->currency_code ?? '-';
-
-        $temperature = 0;
-        $windspeed = 0;
-
-        try {
-
-        $weatherResponse = Http::get(
-        'https://api.open-meteo.com/v1/forecast',
-        [
-            'latitude' => $countryModel->latitude,
-            'longitude' => $countryModel->longitude,
-            'current' => 'temperature_2m,wind_speed_10m'
-        ]
-    );
-
-    $weather = $weatherResponse->json();
-
-    $temperature =
-        $weather['current']['temperature_2m']
-        ?? 0;
-
-    $windspeed =
-        $weather['current']['wind_speed_10m']
-        ?? 0;
-
-} catch (\Exception $e) {
-
-}
         if ($countryModel) {
 
             RiskScore::updateOrCreate(
@@ -320,9 +336,10 @@ if ($negativePercent >= 60) {
         |--------------------------------------------------------------------------
         */
 
-        $rankingCountries = Country::orderByDesc('population')
-            ->take(10)
-            ->get();
+        $rankingCountries = RiskScore::with('country')
+        ->orderByDesc('overall_score')
+        ->take(10)
+        ->get();
 
         return view(
             'risk',

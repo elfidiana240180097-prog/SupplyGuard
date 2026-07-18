@@ -3,169 +3,187 @@
 namespace App\Http\Controllers;
 
 use App\Models\Country;
+use App\Models\RiskScore;
 use Illuminate\Support\Facades\Http;
 
 class DashboardController extends Controller
 {
+    private function getLatestValue($response)
+    {
+        $data = $response->json();
+
+        if (!isset($data[1])) {
+            return 0;
+        }
+
+        foreach ($data[1] as $row) {
+
+            if (!is_null($row['value'])) {
+                return $row['value'];
+            }
+
+        }
+
+        return 0;
+    }
+
     public function index()
     {
         $countries = Country::orderBy('country_name')->get();
 
         $selectedCountry = request('country', 'ID');
 
-        $population = null;
-        $gdp = null;
-        $inflation = null;
+        $population = 0;
+        $gdp = 0;
+        $inflation = 0;
 
-        $currency = null;
-        $temperature = null;
+        $currency = 0;
+        $temperature = 0;
+
+        $countryData = Country::where(
+            'country_code',
+            $selectedCountry
+        )->first();
 
         try {
+
+            /*
+            |--------------------------------------------------------------------------
+            | World Bank API
+            |--------------------------------------------------------------------------
+            */
 
             $populationResponse = Http::get(
                 "https://api.worldbank.org/v2/country/{$selectedCountry}/indicator/SP.POP.TOTL?format=json"
             );
 
-            $population = $populationResponse->json()[1][0]['value'] ?? null;
-
+            $population = $this->getLatestValue(
+                $populationResponse
+            );
 
             $gdpResponse = Http::get(
                 "https://api.worldbank.org/v2/country/{$selectedCountry}/indicator/NY.GDP.MKTP.CD?format=json"
             );
 
-            $gdp = $gdpResponse->json()[1][0]['value'] ?? null;
-
+            $gdp = $this->getLatestValue(
+                $gdpResponse
+            );
 
             $inflationResponse = Http::get(
                 "https://api.worldbank.org/v2/country/{$selectedCountry}/indicator/FP.CPI.TOTL.ZG?format=json"
             );
 
-            $inflation = $inflationResponse->json()[1][0]['value'] ?? null;
+            $inflation = $this->getLatestValue(
+                $inflationResponse
+            );
 
-            // Currency API
+            /*
+            |--------------------------------------------------------------------------
+            | Exchange Rate API
+            |--------------------------------------------------------------------------
+            */
 
-$currencyResponse = Http::get(
-    "https://open.er-api.com/v6/latest/USD"
-);
+            $currencyResponse = Http::get(
+                "https://open.er-api.com/v6/latest/USD"
+            );
 
-$currencyData = $currencyResponse->json();
+            $currencyData = $currencyResponse->json();
 
-$currency = $currencyData['rates']['IDR'] ?? null;
+            $currency = $currencyData['rates'][
+                $countryData->currency_code ?? 'IDR'
+            ] ?? 0;
 
+            /*
+            |--------------------------------------------------------------------------
+            | Open Meteo API
+            |--------------------------------------------------------------------------
+            */
 
-// Weather API
+            if ($countryData) {
 
-if ($countryData = Country::where(
-    'country_code',
-    $selectedCountry
-)->first()) {
+                $weatherResponse = Http::get(
+                    'https://api.open-meteo.com/v1/forecast',
+                    [
+                        'latitude' => $countryData->latitude,
+                        'longitude' => $countryData->longitude,
+                        'current' => 'temperature_2m'
+                    ]
+                );
 
-    $weatherResponse = Http::get(
-        'https://api.open-meteo.com/v1/forecast',
-        [
-            'latitude' => $countryData->latitude,
-            'longitude' => $countryData->longitude,
-            'current' => 'temperature_2m'
-        ]
-    );
+                $weatherData = $weatherResponse->json();
 
-    $weatherData = $weatherResponse->json();
-
-    $temperature =
-        $weatherData['current']['temperature_2m']
-        ?? null;
-}
+                $temperature =
+                    $weatherData['current']['temperature_2m']
+                    ?? 0;
+            }
 
         } catch (\Exception $e) {
 
+            $population = 0;
+            $gdp = 0;
+            $inflation = 0;
+            $currency = 0;
+            $temperature = 0;
         }
 
-        $countryData = Country::where(
-    'country_code',
-    $selectedCountry
-)->first();
+        /*
+        |--------------------------------------------------------------------------
+        | Risk Score
+        |--------------------------------------------------------------------------
+        */
 
-$weatherRisk = 0;
-$inflationRisk = 0;
-$currencyRisk = 0;
+        $riskData = RiskScore::where(
+            'country_id',
+            $countryData?->id
+        )->first();
 
-if ($temperature) {
+        $riskScore =
+            $riskData->overall_score ?? 0;
 
-    if ($temperature < 20) {
-        $weatherRisk = 10;
-    } elseif ($temperature <= 30) {
-        $weatherRisk = 20;
-    } else {
-        $weatherRisk = 30;
-    }
-}
+        $riskLevel =
+            $riskData->risk_level ?? 'Low';
 
-if ($inflation) {
+        /*
+        |--------------------------------------------------------------------------
+        | Dashboard Statistics
+        |--------------------------------------------------------------------------
+        */
 
-    if ($inflation < 3) {
-        $inflationRisk = 10;
-    } elseif ($inflation <= 7) {
-        $inflationRisk = 20;
-    } else {
-        $inflationRisk = 30;
-    }
-}
+        $totalCountries = Country::count();
 
-if ($currency) {
+        $highRiskCountries = RiskScore::whereIn(
+            'risk_level',
+            ['High', 'Critical']
+        )->count();
 
-    if ($currency < 15000) {
-        $currencyRisk = 10;
-    } elseif ($currency <= 16000) {
-        $currencyRisk = 20;
-    } else {
-        $currencyRisk = 30;
-    }
-}
+        $mediumRiskCountries = RiskScore::where(
+            'risk_level',
+            'Medium'
+        )->count();
 
-$riskScore =
-    $weatherRisk +
-    $inflationRisk +
-    $currencyRisk;
+        $lowRiskCountries = RiskScore::where(
+            'risk_level',
+            'Low'
+        )->count();
 
-$riskLevel = 'Low';
-
-if ($riskScore >= 70) {
-    $riskLevel = 'Critical';
-}
-elseif ($riskScore >= 50) {
-    $riskLevel = 'High';
-}
-elseif ($riskScore >= 30) {
-    $riskLevel = 'Medium';
-}
-
-$totalCountries = Country::count();
-
-$highRiskCountries = Country::where('population', '>', 1000000000)->count();
-
-$mediumRiskCountries = Country::whereBetween(
-    'population',
-    [100000000, 1000000000]
-)->count();
-
-$lowRiskCountries = Country::where('population', '<', 100000000)->count();
-
-
-return view('dashboard', compact(
-    'countries',
-    'selectedCountry',
-    'population',
-    'gdp',
-    'inflation',
-    'currency',
-    'temperature',
-    'riskScore',
-    'riskLevel',
-    'countryData',
-    'totalCountries',
-    'highRiskCountries',
-    'mediumRiskCountries',
-    'lowRiskCountries'
-));
+        return view(
+            'dashboard',
+            compact(
+                'countries',
+                'selectedCountry',
+                'population',
+                'gdp',
+                'inflation',
+                'currency',
+                'temperature',
+                'riskScore',
+                'riskLevel',
+                'countryData',
+                'totalCountries',
+                'highRiskCountries',
+                'mediumRiskCountries',
+                'lowRiskCountries'
+            )
+        );
     }
 }

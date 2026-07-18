@@ -169,6 +169,22 @@
 
 </div>
 
+<div class="col-md-3">
+
+    <div class="card text-center">
+
+        <div class="card-body">
+
+            <h5>Closed</h5>
+
+            <h2>{{ $closedPorts }}</h2>
+
+        </div>
+
+    </div>
+
+</div>
+
 <div class="card mb-4">
 
     <div class="card-header">
@@ -176,6 +192,18 @@
         Global Port Location Map
 
     </div>
+
+    <div class="mb-4">
+
+    <a
+        href="{{ route('ports.map') }}"
+        class="btn btn-primary">
+
+        View Full Interactive Map
+
+    </a>
+
+</div>
 
     <div class="card-body">
 
@@ -225,7 +253,35 @@
 
             <td>{{ $port->city }}</td>
 
-            <td>{{ $port->status }}</td>
+            <td>
+
+@if($port->status == 'Normal')
+
+    <span class="badge bg-success">
+        Normal
+    </span>
+
+@elseif($port->status == 'Busy')
+
+    <span class="badge bg-warning text-dark">
+        Busy
+    </span>
+
+@elseif($port->status == 'Delayed')
+
+    <span class="badge bg-danger">
+        Delayed
+    </span>
+
+@else
+
+    <span class="badge bg-dark">
+        Closed
+    </span>
+
+@endif
+
+</td>
 
             <td>
 
@@ -320,13 +376,22 @@ ports.forEach(function(port){
     ])
     .addTo(map)
     .bindPopup(
-        `
-        <strong>${port.port_name}</strong><br>
-        Country: ${port.country.country_name}<br>
-        City: ${port.city}<br>
-        Status: ${port.status}
-        `
-    );
+`
+<div style="min-width:220px">
+
+    <h6><b>${port.port_name}</b></h6>
+
+    <hr>
+
+    <p><b>Country:</b> ${port.country.country_name}</p>
+
+    <p><b>City:</b> ${port.city ?? '-'}</p>
+
+    <p><b>Status:</b> ${port.status}</p>
+
+</div>
+`
+);
 
 });
 

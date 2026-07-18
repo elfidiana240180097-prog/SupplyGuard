@@ -118,14 +118,41 @@
 <div class="card shadow-sm">
 
     <div class="card-header">
-
-        Currency Chart
-
+        Currency Trend Analysis
     </div>
 
     <div class="card-body">
 
         <canvas id="currencyChart"></canvas>
+
+        <hr>
+
+        <div class="row text-center">
+
+            <div class="col-md-4">
+                <h6>Currency Code</h6>
+                <h5>{{ $country->currency_code }}</h5>
+            </div>
+
+            <div class="col-md-4">
+                <h6>Current Rate</h6>
+                <h5>{{ number_format($exchangeRate,2) }}</h5>
+            </div>
+
+            <div class="col-md-4">
+                <h6>Risk Level</h6>
+
+                @if($currencyRisk == 'Low')
+                    <span class="badge bg-success">Low</span>
+                @elseif($currencyRisk == 'Medium')
+                    <span class="badge bg-warning">Medium</span>
+                @else
+                    <span class="badge bg-danger">High</span>
+                @endif
+
+            </div>
+
+        </div>
 
     </div>
 
@@ -139,6 +166,8 @@
 
 <script>
 
+const exchangeRate = {{ $exchangeRate }};
+
 new Chart(
     document.getElementById('currencyChart'),
     {
@@ -147,33 +176,37 @@ new Chart(
         data:{
 
             labels:[
-                '6 Days Ago',
-                '5 Days Ago',
-                '4 Days Ago',
-                '3 Days Ago',
-                '2 Days Ago',
-                'Yesterday',
+                'Day 1',
+                'Day 2',
+                'Day 3',
+                'Day 4',
+                'Day 5',
+                'Day 6',
                 'Today'
             ],
 
             datasets:[{
 
-                label:'Exchange Rate',
+                label:'USD Exchange Rate',
 
                 data:[
+                    exchangeRate * 0.94,
+                    exchangeRate * 0.95,
+                    exchangeRate * 0.97,
+                    exchangeRate * 0.98,
+                    exchangeRate * 0.99,
+                    exchangeRate * 1.00,
+                    exchangeRate
+                ],
 
-                    {{ max($exchangeRate - 150,0) }},
-                    {{ max($exchangeRate - 120,0) }},
-                    {{ max($exchangeRate - 90,0) }},
-                    {{ max($exchangeRate - 60,0) }},
-                    {{ max($exchangeRate - 40,0) }},
-                    {{ max($exchangeRate - 20,0) }},
-                    {{ $exchangeRate }}
-
-                ]
+                tension:0.4
 
             }]
 
+        },
+
+        options:{
+            responsive:true
         }
 
     }
@@ -182,3 +215,5 @@ new Chart(
 </script>
 
 @endpush
+
+</script>

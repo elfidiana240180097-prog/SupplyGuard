@@ -2,14 +2,20 @@
 
 @section('content')
 
-<h2 class="fw-bold mb-2">
-    News Intelligence
-</h2>
+<div class="d-flex justify-content-between align-items-center mb-4">
 
-<p class="text-muted mb-4">
-    News & Economic Intelligence for
-    <strong>{{ $selectedCountry }}</strong>
-</p>
+    <div>
+        <h2 class="fw-bold mb-1">
+            News Intelligence Dashboard
+        </h2>
+
+        <p class="text-muted mb-0">
+            Real-Time Economic News Monitoring &
+            Sentiment Analysis
+        </p>
+    </div>
+
+</div>
 
 <form method="GET" class="mb-4">
 
@@ -44,18 +50,18 @@
 
 <div class="row mb-4">
 
-    <div class="col-md-4">
+    <div class="col-md-3">
 
-        <div class="card text-center shadow-sm">
+        <div class="card border-0 shadow-sm text-center">
 
             <div class="card-body">
 
-                <h5>Positive Score</h5>
+                <h6 class="text-muted">
+                    Positive Score
+                </h6>
 
-                <h2 class="text-success">
-
+                <h2 class="fw-bold text-success">
                     {{ $positiveScore }}
-
                 </h2>
 
             </div>
@@ -64,17 +70,57 @@
 
     </div>
 
-    <div class="col-md-4">
+    <div class="col-md-3">
 
-        <div class="card text-center shadow-sm">
+        <div class="card border-0 shadow-sm text-center">
 
             <div class="card-body">
 
-                <h5>Negative Score</h5>
+                <h6 class="text-muted">
+                    Negative Score
+                </h6>
 
-                <h2 class="text-danger">
-
+                <h2 class="fw-bold text-danger">
                     {{ $negativeScore }}
+                </h2>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <div class="col-md-3">
+
+        <div class="card border-0 shadow-sm text-center">
+
+            <div class="card-body">
+
+                <h6 class="text-muted">
+                    Sentiment
+                </h6>
+
+                <h2 class="fw-bold">
+
+                    @if($sentiment == 'Positive')
+
+                        <span class="text-success">
+                            Positive
+                        </span>
+
+                    @elseif($sentiment == 'Negative')
+
+                        <span class="text-danger">
+                            Negative
+                        </span>
+
+                    @else
+
+                        <span class="text-primary">
+                            Neutral
+                        </span>
+
+                    @endif
 
                 </h2>
 
@@ -84,18 +130,18 @@
 
     </div>
 
-    <div class="col-md-4">
+    <div class="col-md-3">
 
-        <div class="card text-center shadow-sm">
+        <div class="card border-0 shadow-sm text-center">
 
             <div class="card-body">
 
-                <h5>Sentiment</h5>
+                <h6 class="text-muted">
+                    News Risk Score
+                </h6>
 
-                <h2>
-
-                    {{ $sentiment }}
-
+                <h2 class="fw-bold text-warning">
+                    {{ $newsRiskScore }}
                 </h2>
 
             </div>
@@ -108,103 +154,19 @@
 
 <div class="row mb-4">
 
-    <div class="col-md-3">
+    <div class="col-md-7">
 
-        <div class="card text-center shadow-sm">
+        <div class="card border-0 shadow-sm h-100">
 
-            <div class="card-body">
+            <div class="card-header bg-white">
 
-                <h6>Positive %</h6>
-
-                <h3 class="text-success">
-
-                    {{ $positivePercent }}%
-
-                </h3>
+                <h5 class="mb-0 fw-bold">
+                    Sentiment Distribution
+                </h5>
 
             </div>
 
-        </div>
-
-    </div>
-
-    <div class="col-md-3">
-
-        <div class="card text-center shadow-sm">
-
             <div class="card-body">
-
-                <h6>Neutral %</h6>
-
-                <h3 class="text-primary">
-
-                    {{ $neutralPercent }}%
-
-                </h3>
-
-            </div>
-
-        </div>
-
-    </div>
-
-    <div class="col-md-3">
-
-        <div class="card text-center shadow-sm">
-
-            <div class="card-body">
-
-                <h6>Negative %</h6>
-
-                <h3 class="text-danger">
-
-                    {{ $negativePercent }}%
-
-                </h3>
-
-            </div>
-
-        </div>
-
-    </div>
-
-    <div class="col-md-3">
-
-        <div class="card text-center shadow-sm">
-
-            <div class="card-body">
-
-                <h6>News Risk Score</h6>
-
-                <h3 class="text-warning">
-
-                    {{ $newsRiskScore }}
-
-                </h3>
-
-            </div>
-
-        </div>
-
-    </div>
-
-</div>
-
-<div class="card shadow-sm mb-4">
-
-    <div class="card-header">
-
-        <h5 class="mb-0">
-            Sentiment Analysis Chart
-        </h5>
-
-    </div>
-
-    <div class="card-body">
-
-        <div class="d-flex justify-content-center">
-
-            <div style="width:450px;height:450px;">
 
                 <canvas id="sentimentChart"></canvas>
 
@@ -214,7 +176,60 @@
 
     </div>
 
+    <div class="col-md-5">
+
+        <div class="card border-0 shadow-sm h-100">
+
+            <div class="card-header bg-white">
+
+                <h5 class="mb-0 fw-bold">
+                    Analysis Summary
+                </h5>
+
+            </div>
+
+            <div class="card-body">
+
+                <table class="table">
+
+                    <tr>
+                        <th>Positive News</th>
+                        <td>{{ $positivePercent }}%</td>
+                    </tr>
+
+                    <tr>
+                        <th>Neutral News</th>
+                        <td>{{ $neutralPercent }}%</td>
+                    </tr>
+
+                    <tr>
+                        <th>Negative News</th>
+                        <td>{{ $negativePercent }}%</td>
+                    </tr>
+
+                    <tr>
+                        <th>Risk Score</th>
+                        <td>{{ $newsRiskScore }}</td>
+                    </tr>
+
+                    <tr>
+                        <th>Final Sentiment</th>
+                        <td>{{ $sentiment }}</td>
+                    </tr>
+
+                </table>
+
+            </div>
+
+        </div>
+
+    </div>
+
 </div>
+
+<h4 class="fw-bold mb-3">
+    Latest Economic News
+</h4>
 
 <div class="row">
 
@@ -222,14 +237,14 @@
 
 <div class="col-md-6 mb-4">
 
-    <div class="card shadow-sm h-100">
+    <div class="card border-0 shadow-sm h-100">
 
         @if(!empty($article['image']))
 
             <img
                 src="{{ $article['image'] }}"
                 class="card-img-top"
-                style="height:220px; object-fit:cover;">
+                style="height:220px;object-fit:cover">
 
         @endif
 
@@ -301,7 +316,7 @@
 new Chart(
     document.getElementById('sentimentChart'),
     {
-        type: 'pie',
+        type: 'doughnut',
 
         data: {
 
@@ -314,19 +329,30 @@ new Chart(
             datasets: [{
 
                 data: [
+
                     {{ $positivePercent }},
                     {{ $neutralPercent }},
                     {{ $negativePercent }}
+
                 ]
 
             }]
+
         },
 
         options: {
 
             responsive: true,
 
-            maintainAspectRatio: false
+            plugins: {
+
+                legend: {
+
+                    position: 'bottom'
+
+                }
+
+            }
 
         }
 

@@ -53,73 +53,107 @@ class ComparisonController extends Controller
         $temperatureA = 0;
         $temperatureB = 0;
 
+        $currencyA = 0;
+        $currencyB = 0;
+
+        try {
+
+            $currencyResponse = Http::timeout(15)
+                ->get('https://open.er-api.com/v6/latest/USD');
+
+            $currencyData = $currencyResponse->json();
+
+        } catch (\Exception $e) {
+
+            $currencyData = [];
+
+        }
+
         if ($dataA) {
 
-            $gdpA = $this->getLatestValue(
-                Http::get(
-                    "https://api.worldbank.org/v2/country/{$countryA}/indicator/NY.GDP.MKTP.CD?format=json"
-                )
-            );
+            try {
 
-            $inflationA = $this->getLatestValue(
-                Http::get(
-                    "https://api.worldbank.org/v2/country/{$countryA}/indicator/FP.CPI.TOTL.ZG?format=json"
-                )
-            );
+                $gdpA = $this->getLatestValue(
+                    Http::get(
+                        "https://api.worldbank.org/v2/country/{$countryA}/indicator/NY.GDP.MKTP.CD?format=json"
+                    )
+                );
 
-            $weatherA = Http::get(
-                'https://api.open-meteo.com/v1/forecast',
-                [
-                    'latitude' => $dataA->latitude,
-                    'longitude' => $dataA->longitude,
-                    'current' => 'temperature_2m'
-                ]
-            )->json();
+                $inflationA = $this->getLatestValue(
+                    Http::get(
+                        "https://api.worldbank.org/v2/country/{$countryA}/indicator/FP.CPI.TOTL.ZG?format=json"
+                    )
+                );
 
-            $temperatureA =
-                $weatherA['current']['temperature_2m']
-                ?? 0;
+                $weatherA = Http::get(
+                    'https://api.open-meteo.com/v1/forecast',
+                    [
+                        'latitude' => $dataA->latitude,
+                        'longitude' => $dataA->longitude,
+                        'current' => 'temperature_2m'
+                    ]
+                )->json();
+
+                $temperatureA =
+                    $weatherA['current']['temperature_2m']
+                    ?? 0;
+
+                $currencyA =
+                    $currencyData['rates'][$dataA->currency_code]
+                    ?? 0;
+
+            } catch (\Exception $e) {
+
+            }
         }
 
         if ($dataB) {
 
-            $gdpB = $this->getLatestValue(
-                Http::get(
-                    "https://api.worldbank.org/v2/country/{$countryB}/indicator/NY.GDP.MKTP.CD?format=json"
-                )
-            );
+            try {
 
-            $inflationB = $this->getLatestValue(
-                Http::get(
-                    "https://api.worldbank.org/v2/country/{$countryB}/indicator/FP.CPI.TOTL.ZG?format=json"
-                )
-            );
+                $gdpB = $this->getLatestValue(
+                    Http::get(
+                        "https://api.worldbank.org/v2/country/{$countryB}/indicator/NY.GDP.MKTP.CD?format=json"
+                    )
+                );
 
-            $weatherB = Http::get(
-                'https://api.open-meteo.com/v1/forecast',
-                [
-                    'latitude' => $dataB->latitude,
-                    'longitude' => $dataB->longitude,
-                    'current' => 'temperature_2m'
-                ]
-            )->json();
+                $inflationB = $this->getLatestValue(
+                    Http::get(
+                        "https://api.worldbank.org/v2/country/{$countryB}/indicator/FP.CPI.TOTL.ZG?format=json"
+                    )
+                );
 
-            $temperatureB =
-                $weatherB['current']['temperature_2m']
-                ?? 0;
+                $weatherB = Http::get(
+                    'https://api.open-meteo.com/v1/forecast',
+                    [
+                        'latitude' => $dataB->latitude,
+                        'longitude' => $dataB->longitude,
+                        'current' => 'temperature_2m'
+                    ]
+                )->json();
+
+                $temperatureB =
+                    $weatherB['current']['temperature_2m']
+                    ?? 0;
+
+                $currencyB =
+                    $currencyData['rates'][$dataB->currency_code]
+                    ?? 0;
+
+            } catch (\Exception $e) {
+
+            }
         }
 
-        $riskA =
-            RiskScore::where(
-                'country_id',
-                $dataA?->id
-            )->value('overall_score') ?? 0;
+        $riskA = RiskScore::where(
+            'country_id',
+            $dataA?->id
+        )->value('overall_score') ?? 0;
 
-        $riskB =
-            RiskScore::where(
-                'country_id',
-                $dataB?->id
-            )->value('overall_score') ?? 0;
+        $riskB = RiskScore::where(
+            'country_id',
+            $dataB?->id
+        )->value('overall_score') ?? 0;
 
         return view(
             'comparison',
@@ -135,6 +169,8 @@ class ComparisonController extends Controller
                 'inflationB',
                 'temperatureA',
                 'temperatureB',
+                'currencyA',
+                'currencyB',
                 'riskA',
                 'riskB'
             )

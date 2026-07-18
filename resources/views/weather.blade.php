@@ -36,6 +36,52 @@
 
     <div class="card-body">
 
+    <div class="row mb-4">
+
+    <div class="col-md-3">
+        <div class="card shadow-sm text-center">
+            <div class="card-body">
+                <h6>Total Countries</h6>
+                <h3>{{ count($weatherCountries) }}</h3>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-3">
+        <div class="card shadow-sm text-center">
+            <div class="card-body">
+                <h6>High Risk</h6>
+                <h3 class="text-danger">
+                    {{ collect($weatherCountries)->where('risk','High')->count() }}
+                </h3>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-3">
+        <div class="card shadow-sm text-center">
+            <div class="card-body">
+                <h6>Medium Risk</h6>
+                <h3 class="text-warning">
+                    {{ collect($weatherCountries)->where('risk','Medium')->count() }}
+                </h3>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-3">
+        <div class="card shadow-sm text-center">
+            <div class="card-body">
+                <h6>Low Risk</h6>
+                <h3 class="text-success">
+                    {{ collect($weatherCountries)->where('risk','Low')->count() }}
+                </h3>
+            </div>
+        </div>
+    </div>
+
+</div>
+
         <div id="weatherMap" style="height:600px;"></div>
 
     </div>
@@ -175,11 +221,12 @@ countries.forEach(country => {
     ])
     .addTo(map)
     .bindPopup(`
-        <b>${country.country}</b><br>
-        🌡 ${country.temperature} °C<br>
-        💨 ${country.wind} km/h<br>
-        ⚠ ${country.risk}
-    `);
+    <b>${country.country}</b><br>
+    🌡 Temperature: ${country.temperature} °C<br>
+    💨 Wind: ${country.wind} km/h<br>
+    🌧 Rain: ${country.rain} mm<br>
+    ⚠ Risk: ${country.risk}
+`);
 
 });
 

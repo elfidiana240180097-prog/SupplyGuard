@@ -273,18 +273,17 @@
                 <td>{{ $currencyRisk }}</td>
             </tr>
 
-            <tr>
-                <td>News Risk</td>
-                <td>{{ $newsRisk }}</td>
-
-                <p class="text-muted">
-
-                Negative News :
-
-                {{ number_format($negativePercent,2) }}%
-
-                </p>
-            </tr>
+            <<tr>
+    <td>
+        News Risk
+        <br>
+        <small class="text-muted">
+            Negative News:
+            {{ number_format($negativePercent,2) }}%
+        </small>
+    </td>
+    <td>{{ $newsRisk }}</td>
+</tr>
 
             <tr>
             <td>Port Risk</td>
@@ -316,58 +315,64 @@
 
         <table class="table table-striped">
 
-            <thead>
+<thead>
 
-                <tr>
+<tr>
 
-                    <th>Rank</th>
-                    <th>Country</th>
-                    <th>Population</th>
-                    <th>Status</th>
+    <th>Rank</th>
+    <th>Country</th>
+    <th>Risk Score</th>
+    <th>Risk Level</th>
 
-                </tr>
+</tr>
 
-            </thead>
+</thead>
 
-            <tbody>
+<tbody>
 
-                @foreach($rankingCountries as $index => $country)
+@foreach($rankingCountries as $index => $risk)
 
-                <tr>
+<tr>
 
-                    <td>{{ $index + 1 }}</td>
+    <td>{{ $index + 1 }}</td>
 
-                    <td>{{ $country->country_name }}</td>
+    <td>{{ $risk->country->country_name }}</td>
 
-                    <td>{{ number_format($country->population) }}</td>
+    <td>{{ $risk->overall_score }}</td>
 
-                    <td>
+    <td>
 
-                        @if($country->population > 1000000000)
+        @if($risk->overall_score >= 80)
 
-                            <span class="badge bg-danger">
-                                High
-                            </span>
+            <span class="badge bg-dark">
+                Critical
+            </span>
 
-                        @elseif($country->population > 100000000)
+        @elseif($risk->overall_score >= 60)
 
-                            <span class="badge bg-warning">
-                                Medium
-                            </span>
+            <span class="badge bg-danger">
+                High
+            </span>
 
-                        @else
+        @elseif($risk->overall_score >= 40)
 
-                            <span class="badge bg-success">
-                                Low
-                            </span>
+            <span class="badge bg-warning text-dark">
+                Medium
+            </span>
 
-                        @endif
+        @else
 
-                    </td>
+            <span class="badge bg-success">
+                Low
+            </span>
 
-                </tr>
+        @endif
 
-                @endforeach
+    </td>
+
+</tr>
+
+@endforeach
 
             </tbody>
 
@@ -392,20 +397,21 @@ new Chart(ctx, {
     data: {
 
         labels: [
-            'Population',
-            'GDP',
-            'Inflation',
-            'Risk Score'
+        'Weather',
+        'Inflation',
+        'Currency',
+        'News',
+        'Port'
         ],
-
         datasets: [{
 
             data: [
-                {{ round($population / 1000000, 2) }},
-                {{ round($gdp / 100000000000, 2) }},
-                {{ round($inflation, 2) }},
-                {{ $riskScore }}
-            ]
+    {{ $weatherRisk }},
+    {{ $inflationRisk }},
+    {{ $currencyRisk }},
+    {{ $newsRisk }},
+    {{ $portRisk }}
+]
 
         }]
     },

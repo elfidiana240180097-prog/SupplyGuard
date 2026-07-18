@@ -20,31 +20,59 @@ class CurrencyController extends Controller
 
         $exchangeRate = 0;
 
+        $currencyRisk = 'Low';
+
+        $currencyTrend = [];
+
         try {
 
-            $response = Http::get(
-                "https://open.er-api.com/v6/latest/USD"
+            $response = Http::timeout(15)->get(
+                'https://open.er-api.com/v6/latest/USD'
             );
 
             $data = $response->json();
 
             $exchangeRate =
-                $data['rates'][$country->currency_code] ?? 0;
+                $data['rates'][$country->currency_code]
+                ?? 0;
+
+            /*
+            |--------------------------------------------------------------------------
+            | Simulasi Trend Harian
+            |--------------------------------------------------------------------------
+            */
+
+            $currencyTrend = [
+
+                round($exchangeRate * 0.96, 2),
+                round($exchangeRate * 0.97, 2),
+                round($exchangeRate * 0.98, 2),
+                round($exchangeRate * 0.99, 2),
+                round($exchangeRate * 1.00, 2),
+                round($exchangeRate * 1.01, 2),
+                round($exchangeRate, 2),
+
+            ];
 
         } catch (\Exception $e) {
 
             $exchangeRate = 0;
 
+            $currencyTrend = [
+                0,0,0,0,0,0,0
+            ];
         }
 
-        $currencyRisk = 'Low';
-
         if ($exchangeRate > 100) {
+
             $currencyRisk = 'Medium';
+
         }
 
         if ($exchangeRate > 1000) {
+
             $currencyRisk = 'High';
+
         }
 
         return view(
@@ -53,7 +81,8 @@ class CurrencyController extends Controller
                 'countries',
                 'country',
                 'exchangeRate',
-                'currencyRisk'
+                'currencyRisk',
+                'currencyTrend'
             )
         );
     }

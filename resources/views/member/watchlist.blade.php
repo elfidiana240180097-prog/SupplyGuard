@@ -5,15 +5,13 @@
 <div class="d-flex justify-content-between align-items-center mb-4">
 
     <div>
-
-        <h2 class="fw-bold">
+        <h2 class="fw-bold mb-1">
             My Watchlist
         </h2>
 
-        <p class="text-muted">
-            Countries you are monitoring for supply chain risks.
+        <p class="text-muted mb-0">
+            Countries monitored for global supply chain risk analysis.
         </p>
-
     </div>
 
 </div>
@@ -22,57 +20,90 @@
 
     @forelse($watchlists as $watchlist)
 
-        <div class="col-md-4 mb-4">
+        @php
 
-            <div class="card shadow-sm h-100">
+            $riskScore =
+                $watchlist->country->riskScore->overall_score ?? 0;
+
+            $riskLevel =
+                $watchlist->country->riskScore->risk_level ?? 'Low';
+
+            $badgeClass =
+                $riskLevel === 'High'
+                    ? 'bg-danger'
+                    : ($riskLevel === 'Medium'
+                        ? 'bg-warning text-dark'
+                        : 'bg-success');
+
+        @endphp
+
+        <div class="col-lg-4 col-md-6 mb-4">
+
+            <div class="card border-0 shadow-sm h-100">
 
                 <div class="card-body text-center">
 
                     <img
                         src="https://flagcdn.com/w160/{{ strtolower($watchlist->country->country_code) }}.png"
-                        class="img-fluid mb-3 border rounded"
+                        class="img-fluid border rounded mb-3"
                         style="height:70px;"
                         alt="{{ $watchlist->country->country_name }}">
 
                     <h5 class="fw-bold">
-
                         {{ $watchlist->country->country_name }}
-
                     </h5>
+
+                    <span class="badge {{ $badgeClass }} mb-3">
+                        {{ $riskLevel }} Risk
+                    </span>
 
                     <hr>
 
-                    <p>
+                    <div class="row text-start">
 
-                        <strong>Code:</strong>
+                        <div class="col-6 mb-2">
+                            <strong>Code</strong>
+                        </div>
 
-                        {{ $watchlist->country->country_code }}
+                        <div class="col-6 mb-2 text-end">
+                            {{ $watchlist->country->country_code }}
+                        </div>
 
-                    </p>
+                        <div class="col-6 mb-2">
+                            <strong>Region</strong>
+                        </div>
 
-                    <p>
+                        <div class="col-6 mb-2 text-end">
+                            {{ $watchlist->country->region ?? '-' }}
+                        </div>
 
-                        <strong>Region:</strong>
+                        <div class="col-6 mb-2">
+                            <strong>Capital</strong>
+                        </div>
 
-                        {{ $watchlist->country->region ?? '-' }}
+                        <div class="col-6 mb-2 text-end">
+                            {{ $watchlist->country->capital ?? '-' }}
+                        </div>
 
-                    </p>
+                        <div class="col-6 mb-2">
+                            <strong>Currency</strong>
+                        </div>
 
-                    <p>
+                        <div class="col-6 mb-2 text-end">
+                            {{ $watchlist->country->currency_name ?? '-' }}
+                        </div>
 
-                        <strong>Currency:</strong>
+                        <div class="col-6 mb-2">
+                            <strong>Risk Score</strong>
+                        </div>
 
-                        {{ $watchlist->country->currency ?? '-' }}
+                        <div class="col-6 mb-2 text-end">
+                            {{ number_format($riskScore, 2) }}
+                        </div>
 
-                    </p>
+                    </div>
 
-                    <p>
-
-                        <strong>Capital:</strong>
-
-                        {{ $watchlist->country->capital ?? '-' }}
-
-                    </p>
+                    <hr>
 
                     <form
                         action="{{ route('watchlists.destroy', $watchlist->id) }}"
@@ -82,9 +113,8 @@
                         @method('DELETE')
 
                         <button
+                            type="submit"
                             class="btn btn-danger w-100">
-
-                            <i class="bi bi-trash"></i>
 
                             Remove Watchlist
 
@@ -102,7 +132,7 @@
 
         <div class="col-12">
 
-            <div class="alert alert-info">
+            <div class="alert alert-info shadow-sm">
 
                 No countries in your watchlist yet.
 
