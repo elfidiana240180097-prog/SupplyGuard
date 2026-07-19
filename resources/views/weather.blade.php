@@ -10,17 +10,14 @@
     <div class="card-body">
 
         <select id="countryFilter" class="form-select">
-
             <option value="">
                 🌍 Show All Countries
             </option>
 
             @foreach($weatherCountries as $item)
-
                 <option value="{{ strtolower($item['country']) }}">
                     {{ $item['country'] }}
                 </option>
-
             @endforeach
 
         </select>
@@ -36,51 +33,51 @@
 
     <div class="card-body">
 
-    <div class="row mb-4">
+        <div class="row mb-4">
 
-    <div class="col-md-3">
-        <div class="card shadow-sm text-center">
-            <div class="card-body">
-                <h6>Total Countries</h6>
-                <h3>{{ count($weatherCountries) }}</h3>
+            <div class="col-md-3">
+                <div class="card shadow-sm text-center">
+                    <div class="card-body">
+                        <h6>Total Countries</h6>
+                        <h3>{{ count($weatherCountries) }}</h3>
+                    </div>
+                </div>
             </div>
-        </div>
-    </div>
 
-    <div class="col-md-3">
-        <div class="card shadow-sm text-center">
-            <div class="card-body">
-                <h6>High Risk</h6>
-                <h3 class="text-danger">
-                    {{ collect($weatherCountries)->where('risk','High')->count() }}
-                </h3>
+            <div class="col-md-3">
+                <div class="card shadow-sm text-center">
+                    <div class="card-body">
+                        <h6>High Risk</h6>
+                        <h3 class="text-danger">
+                            {{ collect($weatherCountries)->where('risk','High')->count() }}
+                        </h3>
+                    </div>
+                </div>
             </div>
-        </div>
-    </div>
 
-    <div class="col-md-3">
-        <div class="card shadow-sm text-center">
-            <div class="card-body">
-                <h6>Medium Risk</h6>
-                <h3 class="text-warning">
-                    {{ collect($weatherCountries)->where('risk','Medium')->count() }}
-                </h3>
+            <div class="col-md-3">
+                <div class="card shadow-sm text-center">
+                    <div class="card-body">
+                        <h6>Medium Risk</h6>
+                        <h3 class="text-warning">
+                            {{ collect($weatherCountries)->where('risk','Medium')->count() }}
+                        </h3>
+                    </div>
+                </div>
             </div>
-        </div>
-    </div>
 
-    <div class="col-md-3">
-        <div class="card shadow-sm text-center">
-            <div class="card-body">
-                <h6>Low Risk</h6>
-                <h3 class="text-success">
-                    {{ collect($weatherCountries)->where('risk','Low')->count() }}
-                </h3>
+            <div class="col-md-3">
+                <div class="card shadow-sm text-center">
+                    <div class="card-body">
+                        <h6>Low Risk</h6>
+                        <h3 class="text-success">
+                            {{ collect($weatherCountries)->where('risk','Low')->count() }}
+                        </h3>
+                    </div>
+                </div>
             </div>
-        </div>
-    </div>
 
-</div>
+        </div>
 
         <div id="weatherMap" style="height:600px;"></div>
 
@@ -88,7 +85,7 @@
 
 </div>
 
-<div class="row mt-4">
+<div class="row mt-4" id="countriesContainer">
 
     @foreach($weatherCountries as $item)
 
@@ -99,11 +96,7 @@
         <div class="card shadow-sm h-100">
 
             <div class="card-header">
-
-                <strong>
-                    {{ $item['country'] }}
-                </strong>
-
+                <strong>{{ $item['country'] }}</strong>
             </div>
 
             <div class="card-body">
@@ -119,25 +112,28 @@
                 </p>
 
                 <p>
+                    🌧 Rain:
+                    <b>{{ $item['rain'] }} mm</b>
+                </p>
 
-                    Risk:
+                <p>
 
-                    @if($item['risk'] == 'Normal')
+                    @if($item['risk'] == 'Low')
 
                         <span class="badge bg-success">
-                            Normal
+                            Low Risk
                         </span>
 
-                    @elseif($item['risk'] == 'High Wind')
+                    @elseif($item['risk'] == 'Medium')
 
                         <span class="badge bg-warning text-dark">
-                            High Wind
+                            Medium Risk
                         </span>
 
                     @else
 
                         <span class="badge bg-danger">
-                            Storm Risk
+                            High Risk
                         </span>
 
                     @endif
@@ -154,6 +150,20 @@
 
 </div>
 
+<div class="d-flex justify-content-center mt-4">
+
+    <button class="btn btn-outline-primary me-2" id="prevPage">
+        Previous
+    </button>
+
+    <span class="align-self-center" id="pageInfo"></span>
+
+    <button class="btn btn-outline-primary ms-2" id="nextPage">
+        Next
+    </button>
+
+</div>
+
 @endsection
 
 @push('styles')
@@ -161,38 +171,6 @@
 <link
 href="https://cdn.jsdelivr.net/npm/tom-select/dist/css/tom-select.css"
 rel="stylesheet">
-
-<style>
-
-.ts-wrapper{
-    width:100%;
-}
-
-.ts-control{
-    min-height:60px !important;
-    font-size:20px !important;
-    padding:12px 15px !important;
-    border-radius:12px !important;
-}
-
-.ts-control input{
-    font-size:20px !important;
-}
-
-.ts-dropdown{
-    font-size:18px !important;
-    max-height:400px !important;
-}
-
-.ts-dropdown .option{
-    padding:15px !important;
-}
-
-.ts-dropdown-content{
-    max-height:400px !important;
-}
-
-</style>
 
 @endpush
 
@@ -221,30 +199,18 @@ countries.forEach(country => {
     ])
     .addTo(map)
     .bindPopup(`
-    <b>${country.country}</b><br>
-    🌡 Temperature: ${country.temperature} °C<br>
-    💨 Wind: ${country.wind} km/h<br>
-    🌧 Rain: ${country.rain} mm<br>
-    ⚠ Risk: ${country.risk}
-`);
+        <b>${country.country}</b><br>
+        🌡 Temperature: ${country.temperature} °C<br>
+        💨 Wind: ${country.wind} km/h<br>
+        🌧 Rain: ${country.rain} mm<br>
+        ⚠ Risk: ${country.risk}
+    `);
 
 });
 
 new TomSelect("#countryFilter",{
-
     create:false,
-
-    placeholder:"Select Country",
-
-    maxOptions:null,
-
-    dropdownParent:'body',
-
-    sortField:{
-        field:'text',
-        direction:'asc'
-    }
-
+    maxOptions:null
 });
 
 document
@@ -269,6 +235,54 @@ document
     });
 
 });
+
+const cards = document.querySelectorAll('.country-card');
+
+let currentPage = 1;
+const cardsPerPage = 12;
+
+function showPage(page){
+
+    const start = (page - 1) * cardsPerPage;
+    const end = start + cardsPerPage;
+
+    cards.forEach((card,index)=>{
+
+        card.style.display =
+            index >= start && index < end
+            ? 'block'
+            : 'none';
+
+    });
+
+    document.getElementById('pageInfo').innerText =
+        `Page ${page} of ${Math.ceil(cards.length/cardsPerPage)}`;
+}
+
+document.getElementById('nextPage')
+.addEventListener('click',()=>{
+
+    if(
+        currentPage <
+        Math.ceil(cards.length/cardsPerPage)
+    ){
+        currentPage++;
+        showPage(currentPage);
+    }
+
+});
+
+document.getElementById('prevPage')
+.addEventListener('click',()=>{
+
+    if(currentPage > 1){
+        currentPage--;
+        showPage(currentPage);
+    }
+
+});
+
+showPage(1);
 
 </script>
 

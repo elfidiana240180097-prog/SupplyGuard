@@ -1,20 +1,24 @@
-<nav class="navbar navbar-expand-lg navbar-dark bg-success shadow">
+<nav class="navbar navbar-expand-lg navbar-dark">
 
     <div class="container-fluid">
 
         <a class="navbar-brand d-flex align-items-center" href="#">
 
-            <img src="{{ asset('images/logo.png') }}"
-                 width="45"
-                 class="me-2">
+            <div class="bg-white rounded-circle d-flex align-items-center justify-content-center me-3 shadow"
+                 style="width:48px;height:48px;">
+
+                <img src="{{ asset('images/logo.png') }}"
+                     width="28">
+
+            </div>
 
             <div>
 
-                <div class="fw-bold">
+                <div class="fw-bold fs-5">
                     SupplyGuard
                 </div>
 
-                <small style="font-size:11px;">
+                <small class="opacity-75">
                     Global Supply Chain Risk Intelligence
                 </small>
 
@@ -24,65 +28,78 @@
 
         @auth
 
-        <div class="dropdown">
+        <div class="d-flex align-items-center">
 
-            <button
-                class="btn btn-success dropdown-toggle"
-                type="button"
-                data-bs-toggle="dropdown">
+            <div class="text-end me-3 text-white">
 
-                <i class="bi bi-person-circle me-1"></i>
+                <div class="fw-semibold">
+                    {{ auth()->user()->name }}
+                </div>
 
-                {{ auth()->user()->name }}
-
-                <span class="badge bg-light text-dark ms-1">
+                <small class="opacity-75">
 
                     {{ ucfirst(auth()->user()->role) }}
 
-                </span>
+                </small>
 
-            </button>
+            </div>
 
-            <ul class="dropdown-menu dropdown-menu-end">
+            <div class="dropdown">
 
-                <li>
+                <button
+                    class="btn btn-light rounded-pill px-3 shadow-sm"
+                    type="button"
+                    data-bs-toggle="dropdown">
 
-                    <a class="dropdown-item"
-                       href="{{ route('profile.edit') }}">
+                    <i class="bi bi-person-circle me-1"></i>
 
-                        <i class="bi bi-person"></i>
-                        Profile
+                    Account
 
-                    </a>
+                </button>
 
-                </li>
+                <ul class="dropdown-menu dropdown-menu-end border-0 shadow">
 
-                <li>
-                    <hr class="dropdown-divider">
-                </li>
+                    <li>
 
-                <li>
+                        <a class="dropdown-item"
+                           href="{{ route('profile.edit') }}">
 
-                    <form
-                        action="{{ route('logout') }}"
-                        method="POST">
+                            <i class="bi bi-person me-2"></i>
 
-                        @csrf
+                            Profile
 
-                        <button
-                            type="submit"
-                            class="dropdown-item text-danger">
+                        </a>
 
-                            <i class="bi bi-box-arrow-right"></i>
-                            Logout
+                    </li>
 
-                        </button>
+                    <li>
+                        <hr class="dropdown-divider">
+                    </li>
 
-                    </form>
+                    <li>
 
-                </li>
+                        <form action="{{ route('logout') }}"
+                              method="POST">
 
-            </ul>
+                            @csrf
+
+                            <button
+                                type="submit"
+                                class="dropdown-item text-danger">
+
+                                <i class="bi bi-box-arrow-right me-2"></i>
+
+                                Logout
+
+                            </button>
+
+                        </form>
+
+                    </li>
+
+                </ul>
+
+            </div>
 
         </div>
 

@@ -12,7 +12,7 @@ class WeatherController extends Controller
         $countries = Country::whereNotNull('latitude')
             ->whereNotNull('longitude')
             ->orderBy('country_name')
-            ->limit(40)
+            ->take(50)
             ->get();
 
         $weatherCountries = [];
@@ -21,7 +21,7 @@ class WeatherController extends Controller
 
             try {
 
-                $response = Http::timeout(5)->get(
+                $response = Http::timeout(3)->get(
                     'https://api.open-meteo.com/v1/forecast',
                     [
                         'latitude' => $country->latitude,
@@ -36,17 +36,11 @@ class WeatherController extends Controller
 
                 $weather = $response->json();
 
-                $temperature =
-                    $weather['current']['temperature_2m']
-                    ?? 0;
+                $current = $weather['current'] ?? [];
 
-                $wind =
-                    $weather['current']['wind_speed_10m']
-                    ?? 0;
-
-                $rain =
-                    $weather['current']['rain']
-                    ?? 0;
+                $temperature = $current['temperature_2m'] ?? 0;
+                $wind = $current['wind_speed_10m'] ?? 0;
+                $rain = $current['rain'] ?? 0;
 
                 $risk = 'Low';
 
@@ -59,29 +53,21 @@ class WeatherController extends Controller
                 }
 
                 $weatherCountries[] = [
-
                     'country' => $country->country_name,
                     'country_code' => $country->country_code,
-
                     'lat' => $country->latitude,
                     'lng' => $country->longitude,
-
                     'temperature' => $temperature,
                     'wind' => $wind,
                     'rain' => $rain,
-
-                    'risk' => $risk
+                    'risk' => $risk,
                 ];
 
-            } catch (\Exception $e) {
-
+            } catch (\Throwable $e) {
                 continue;
             }
         }
 
-        return view(
-            'weather',
-            compact('weatherCountries')
-        );
+        return view('weather', compact('weatherCountries'));
     }
 }
