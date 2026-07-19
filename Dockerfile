@@ -16,7 +16,9 @@ COPY . .
 
 RUN composer install --no-dev --optimize-autoloader
 
-RUN a2enmod rewrite
+RUN a2enmod rewrite && \
+    a2dismod mpm_event && \
+    a2enmod mpm_prefork
 
 RUN sed -ri -e 's!/var/www/html!/var/www/html/public!g' \
     /etc/apache2/sites-available/*.conf
