@@ -71,7 +71,7 @@
 
         @include('partials.member-sidebar')
 
-        <main class="col-md-10">
+        <main class="col-md-10 py-4 px-4">
 
             @yield('content')
 
